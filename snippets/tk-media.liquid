@@ -1,0 +1,40 @@
+{%- comment -%}
+  Resolves an uploaded file to a URL.
+  - file: a Video, GenericFile or image object (from a video/image picker or a metaobject file field)
+  - name: fallback file name or URL (Content → Files), used when file is blank
+  - want: 'src' (playable URL, default) or 'poster' (cover image URL)
+  - w: image width for posters
+  Usage: {%- render 'tk-media', file: block.settings.video, name: block.settings.video_file, want: 'src' -%}
+{%- endcomment -%}
+{%- liquid
+  assign want = want | default: 'src'
+  assign w = w | default: 900
+  if file != blank
+    if want == 'poster'
+      if file.preview_image
+        echo file.preview_image | image_url: width: w
+      elsif file.media_type == 'image' or file.width
+        echo file | image_url: width: w
+      endif
+    else
+      if file.sources
+        assign best = ''
+        assign best_w = 0
+        for s in file.sources
+          if s.format == 'mp4' and s.width > best_w and s.width <= 1080
+            assign best = s.url
+            assign best_w = s.width
+          endif
+        endfor
+        if best == blank
+          assign best = file.sources | where: 'format', 'mp4' | map: 'url' | first | default: file.sources.first.url
+        endif
+        echo best
+      else
+        echo file.url
+      endif
+    endif
+  elsif name != blank
+    render 'tk-src', f: name, w: w
+  endif
+-%}

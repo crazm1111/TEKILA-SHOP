@@ -23,8 +23,8 @@
     <p style="margin: 0; font-size: 15px; line-height: 1.5; opacity: .8">{{ section.settings.text }}</p>
     <div class="pd-stage">
       <video muted playsinline loop preload="none" data-tk-loop
-        data-src="{%- render 'tk-src', f: section.settings.loop_video -%}"
-        poster="{%- render 'tk-src', f: section.settings.loop_poster, w: 900 -%}"
+        data-src="{%- render 'tk-media', file: section.settings.loop_video, name: section.settings.loop_file -%}"
+        poster="{%- if section.settings.loop_poster != blank -%}{%- render 'tk-media', file: section.settings.loop_poster, want: 'poster' -%}{%- elsif section.settings.loop_video != blank -%}{%- render 'tk-media', file: section.settings.loop_video, want: 'poster' -%}{%- else -%}{%- render 'tk-src', f: section.settings.loop_poster_file, w: 900 -%}{%- endif -%}"
         aria-label="Gathering highlights"></video>
       <span class="pd-cap" data-cap>{{ section.settings.loop_caption }}</span>
       <button type="button" class="pd-snd" aria-pressed="false" aria-label="Turn sound on" data-snd>
@@ -34,12 +34,34 @@
     </div>
     <ul class="pd-reel" aria-label="Gathering clips" style="margin: 0">
       {%- for block in section.blocks -%}
+        {%- liquid
+          assign bs = block.settings
+          capture clip_src
+            render 'tk-media', file: bs.video, name: bs.video_file
+          endcapture
+          if bs.poster != blank
+            capture clip_poster
+              render 'tk-media', file: bs.poster, want: 'poster', w: 900
+            endcapture
+          elsif bs.video != blank
+            capture clip_poster
+              render 'tk-media', file: bs.video, want: 'poster', w: 900
+            endcapture
+          else
+            capture clip_poster
+              render 'tk-src', f: bs.poster_file, w: 900
+            endcapture
+          endif
+          if clip_src == blank
+            continue
+          endif
+        -%}
         <li {{ block.shopify_attributes }}>
           <button type="button" class="pd-clip" aria-pressed="false" aria-label="Play with sound: {{ block.settings.caption | escape }}"
-            data-clip="{%- render 'tk-src', f: block.settings.video -%}"
-            data-poster="{%- render 'tk-src', f: block.settings.poster, w: 900 -%}"
+            data-clip="{{ clip_src | strip }}"
+            data-poster="{{ clip_poster | strip }}"
             data-cap="{{ block.settings.caption | escape }}">
-            <img src="{%- render 'tk-src', f: block.settings.poster, w: 240 -%}" alt="" loading="lazy" width="108" height="192"><span>{{ block.settings.caption }}</span>
+            <img src="{{ clip_poster | strip }}" alt="" loading="lazy" width="108" height="192"><span>{{ block.settings.caption }}</span>
           </button>
         </li>
       {%- endfor -%}
@@ -77,18 +99,24 @@
     { "type": "text", "id": "heading_a", "label": "Heading, serif", "default": "Every month," },
     { "type": "text", "id": "heading_b", "label": "Heading, wide", "default": "a room full of strangers." },
     { "type": "textarea", "id": "text", "label": "Text", "default": "Games, dancing, letters and a lot of noise. Passport holders get a seat at every one." },
-    { "type": "text", "id": "loop_video", "label": "Silent loop video (file name or URL)", "default": "gather-compilation.mp4" },
-    { "type": "text", "id": "loop_poster", "label": "Loop poster (file name or URL)", "default": "gather-compilation.jpg" },
-    { "type": "text", "id": "loop_caption", "label": "Loop caption", "default": "Gathering Nº 06" }
+    { "type": "header", "content": "Big silent loop" },
+    { "type": "video", "id": "loop_video", "label": "Video" },
+    { "type": "image_picker", "id": "loop_poster", "label": "Cover image (optional)", "info": "Shown before the video loads. Empty = the video's own thumbnail." },
+    { "type": "text", "id": "loop_caption", "label": "Caption over the video", "default": "Gathering Nº 06" },
+    { "type": "text", "id": "loop_file", "label": "Older file name (used only if no video is chosen above)" },
+    { "type": "text", "id": "loop_poster_file", "label": "Older cover file name (used only if no video or cover is chosen above)" },
+    { "type": "paragraph", "content": "Clips: add, drag to reorder or remove them as blocks below. Tapping a clip plays it in the big frame with sound." }
   ],
   "blocks": [
     {
       "type": "clip",
       "name": "Clip",
       "settings": [
-        { "type": "text", "id": "video", "label": "Video (file name or URL)" },
-        { "type": "text", "id": "poster", "label": "Poster (file name or URL)" },
-        { "type": "text", "id": "caption", "label": "Caption" }
+        { "type": "video", "id": "video", "label": "Video" },
+        { "type": "text", "id": "caption", "label": "Caption over the video" },
+        { "type": "image_picker", "id": "poster", "label": "Cover image (optional)", "info": "Empty = the video's own thumbnail." },
+        { "type": "text", "id": "video_file", "label": "Older file name (used only if no video is chosen above)" },
+        { "type": "text", "id": "poster_file", "label": "Older cover file name (used only if no video or cover is chosen above)" }
       ]
     }
   ],

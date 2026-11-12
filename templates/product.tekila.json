@@ -30,41 +30,41 @@
         "c1": {
           "type": "clip",
           "settings": {
-            "video": "gather-2.mp4",
-            "poster": "gather-2.jpg",
-            "caption": "The dancing"
+            "caption": "The dancing",
+            "video_file": "gather-2.mp4",
+            "poster_file": "gather-2.jpg"
           }
         },
         "c2": {
           "type": "clip",
           "settings": {
-            "video": "gather-3.mp4",
-            "poster": "gather-3.jpg",
-            "caption": "Game night"
+            "caption": "Game night",
+            "video_file": "gather-3.mp4",
+            "poster_file": "gather-3.jpg"
           }
         },
         "c3": {
           "type": "clip",
           "settings": {
-            "video": "gather-4.mp4",
-            "poster": "gather-4.jpg",
-            "caption": "“TEKILAAA”"
+            "caption": "“TEKILAAA”",
+            "video_file": "gather-4.mp4",
+            "poster_file": "gather-4.jpg"
           }
         },
         "c4": {
           "type": "clip",
           "settings": {
-            "video": "gather-5.mp4",
-            "poster": "gather-5.jpg",
-            "caption": "Getting stamped"
+            "caption": "Getting stamped",
+            "video_file": "gather-5.mp4",
+            "poster_file": "gather-5.jpg"
           }
         },
         "c5": {
           "type": "clip",
           "settings": {
-            "video": "gather-1.mp4",
-            "poster": "gather-1.jpg",
-            "caption": "Strangers, dancing"
+            "caption": "Strangers, dancing",
+            "video_file": "gather-1.mp4",
+            "poster_file": "gather-1.jpg"
           }
         }
       },
@@ -79,53 +79,13 @@
         "heading_a": "Every month,",
         "heading_b": "a room full of strangers.",
         "text": "Games, dancing, letters and a lot of noise. Passport holders get a seat at every one.",
-        "loop_video": "gather-compilation.mp4",
-        "loop_poster": "gather-compilation.jpg",
-        "loop_caption": "Gathering Nº 06"
+        "loop_caption": "Gathering Nº 06",
+        "loop_file": "gather-compilation.mp4",
+        "loop_poster_file": "gather-compilation.jpg"
       }
     },
     "reviews": {
       "type": "tk-reviews",
-      "blocks": {
-        "r1": {
-          "type": "review",
-          "settings": {
-            "video": "review-best-scent.mp4",
-            "poster": "review-best-scent.jpg",
-            "quote": "Best scent I ever smelled."
-          }
-        },
-        "r2": {
-          "type": "review",
-          "settings": {
-            "video": "review-feel-home.mp4",
-            "poster": "review-feel-home.jpg",
-            "quote": "It makes me feel home."
-          }
-        },
-        "r3": {
-          "type": "review",
-          "settings": {
-            "video": "review-hyper-sweet.mp4",
-            "poster": "review-hyper-sweet.jpg",
-            "quote": "Hyper and sweet."
-          }
-        },
-        "r4": {
-          "type": "review",
-          "settings": {
-            "video": "review-smells-good.mp4",
-            "poster": "review-smells-good.jpg",
-            "quote": "It smells really good."
-          }
-        }
-      },
-      "block_order": [
-        "r1",
-        "r2",
-        "r3",
-        "r4"
-      ],
       "settings": {
         "heading_a": "They did",
         "heading_b": "the scary thing.",
