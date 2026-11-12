@@ -39,6 +39,7 @@
         "c2": {
           "type": "clip",
           "settings": {
+            "video": "shopify://files/videos/IMG_3720.mov",
             "caption": "Game night",
             "video_file": "gather-3.mp4",
             "poster_file": "gather-3.jpg"
