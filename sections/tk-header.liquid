@@ -11,7 +11,7 @@
     <span class="mono" style="font-size: 12px; opacity: .8"><tk-time format="closes">Closes Thursday</tk-time></span>
   </div>
 {%- else -%}
-  <div class="tk-site-chrome">
+  <div class="tk-site-chrome" data-tk-header>
     <div class="tk-ann">
       <span class="mono" style="font-weight: 600">Batch <tk-time format="batch">01</tk-time> closes in <tk-time format="long">Thursday 11:59 pm</tk-time></span>
       <span style="opacity: .7">{{ section.settings.ann_line | escape }}</span>
