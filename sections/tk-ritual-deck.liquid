@@ -23,7 +23,7 @@
 .rd-hint-t{padding:0 20px;text-align:center;font:900 18px var(--tk-f-sans);font-stretch:125%;letter-spacing:.04em;text-transform:uppercase}
 .rd-hint-s{font:600 12px var(--tk-f-mono);letter-spacing:.1em;opacity:.8}
 .rd-hand{display:flex;align-items:center;gap:6px;color:#E9A93C;animation:rdSwipe 1s ease-in-out infinite}
-@keyframes rdSwipe{0%{transform:translateX(-24px);opacity:.3}60%{transform:translateX(24px);opacity:1}100%{transform:translateX(24px);opacity:0}}
+@keyframes rdSwipe{0%{transform:translateX(24px);opacity:.3}60%{transform:translateX(-24px);opacity:1}100%{transform:translateX(-24px);opacity:0}}
 .rd-inner{position:absolute;inset:0;display:flex;flex-direction:column;transition:opacity .4s}
 .rd-photo{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
 .rd-shade{position:absolute;inset:0;background:linear-gradient(180deg,rgba(14,11,9,0) 25%,rgba(14,11,9,.55) 52%,rgba(14,11,9,.96) 100%)}
@@ -114,8 +114,8 @@
         </div>
       </div>
       <div class="rd-hint" aria-hidden="true" data-hint>
-        <span class="rd-hand"><svg width="44" height="24" viewBox="0 0 44 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12h38M30 3l10 9-10 9"/></svg></span>
-        <span class="rd-hint-t">Swipe to the right</span>
+        <span class="rd-hand"><svg width="44" height="24" viewBox="0 0 44 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M42 12H4M14 3L4 12l10 9"/></svg></span>
+        <span class="rd-hint-t">Swipe to the left</span>
       </div>
     </div>
 
@@ -180,7 +180,7 @@
       core.addEventListener('click', function () { if (swiped) { swiped = false; return; } breathe(); });
       this.querySelector('[data-next]').addEventListener('click', function () { next(); });
       this.querySelector('[data-prev]').addEventListener('click', prev);
-      /* Drag the top card: it follows the finger; throw it to the right for the next card.
+      /* Drag the top card: it follows the finger; throw it to the left for the next card.
          A plain tap also moves on, except on the Breathe card, where a tap starts the breathing. */
       deck.addEventListener('pointerdown', function (e) {
         if (busy || (e.pointerType === 'mouse' && e.button !== 0)) return;
@@ -193,8 +193,8 @@
           drag = true; top().classList.add('rd-drag');
           try { deck.setPointerCapture(e.pointerId); } catch (er) {}
         }
-        // right only: dragging left just resists a little and springs back
-        var shown = dx > 0 ? dx : dx * 0.15;
+        // left only: dragging right just resists a little and springs back
+        var shown = dx < 0 ? dx : dx * 0.15;
         if (drag) top().style.transform = 'translateX(' + shown + 'px) rotate(' + (shown / 18) + 'deg)';
       });
       var release = function (e, cancelled) {
@@ -203,7 +203,7 @@
         x0 = null; drag = false; top().classList.remove('rd-drag');
         if (wasDrag) {
           swiped = true; setTimeout(function () { swiped = false; }, 300);
-          if (!cancelled && dx > 60) next('right'); else top().style.transform = '';
+          if (!cancelled && dx < -60) next('left'); else top().style.transform = '';
           return;
         }
         if (cancelled || moved) return;
