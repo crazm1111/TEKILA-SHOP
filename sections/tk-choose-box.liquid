@@ -70,12 +70,15 @@
   assign tick = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg>'
 -%}
 <section id="reserve" aria-labelledby="cb-h-{{ section.id }}" style="background: #D8C3A0; color: #171310; padding: 64px 20px 72px">
-  <tk-box data-base="{{ base }}" style="max-width: 480px; margin: 0 auto; display: flex; flex-direction: column; gap: 22px">
+  <tk-box class="tk-split" data-base="{{ base }}" style="max-width: 480px; margin: 0 auto; display: flex; flex-direction: column; gap: 22px">
+    <div class="tk-split-head">
     <h2 id="cb-h-{{ section.id }}" style="margin: 0; display: flex; flex-direction: column; gap: 4px">
       <span class="cb-wide" style="font-size: 50px; line-height: .9">Pick your</span>
       <span class="cb-wide" style="font-size: 50px; line-height: .9">way in.</span>
       <span class="cb-serif" style="font-size: 28px; line-height: 1.1; color: #B3202B; margin-top: 6px">{{ section.settings.subline }}</span>
     </h2>
+    </div>
+    <div class="tk-split-body">
 
     <div class="cb-switch" role="radiogroup" aria-label="Choose Ritual or Passport">
       <span class="cb-knob" aria-hidden="true" data-knob></span>
@@ -119,6 +122,7 @@
         <span class="cb-mono" style="font-size: 13px; opacity: .55; text-decoration: line-through" data-pass-show>{{ section.settings.future_price }}</span>
       </div>
       <a href="{{ base }}?edition=passport" class="cb-btn" data-cta>Reserve the Passport</a>
+    </div>
     </div>
   </tk-box>
 </section>

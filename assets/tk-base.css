@@ -73,4 +73,15 @@ html.tk-intro-on,html.tk-intro-on body{overflow:hidden;overscroll-behavior:none}
 .tk [id^="ba-h"] .wide{font-size:min(50px,calc((100vw - 52px) / 7.5))!important}
 
 /* reduced motion: every TEKILA animation and transition stops */
+/* Desktop split: section title on the left (sticky), content on the right.
+   Below 1000px the wrappers vanish (display:contents) so the mobile column is unchanged. */
+.tk-split-head,.tk-split-body{display:contents}
+@media (min-width:1000px){
+  .tk-split{max-width:1160px!important;display:grid!important;grid-template-columns:minmax(0,5fr) minmax(0,6fr);column-gap:clamp(56px,7vw,120px)!important;align-items:start}
+  .tk-split-outer{max-width:1160px!important}
+  .tk-split>.tk-split-head{display:flex;flex-direction:column;row-gap:inherit;position:sticky;top:48px}
+  .tk-split>.tk-split-body{display:flex;flex-direction:column;row-gap:inherit;width:100%;max-width:520px;min-width:0}
+  .tk-split-center{align-items:center}
+  .tk-split-center>.tk-split-head{position:static}
+}
 @media (prefers-reduced-motion:reduce){.tk *,.tk *::before,.tk *::after{animation:none!important;transition:none!important}}

@@ -21,13 +21,16 @@
 @keyframes rsIn2{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
 {%- endstyle -%}
 <section aria-labelledby="rs-h-{{ section.id }}" style="background: #F4EADA; color: #171310; padding: 64px 20px 72px; overflow: hidden">
-  <div style="max-width: 480px; margin: 0 auto; display: flex; flex-direction: column; gap: 22px">
+  <div class="tk-split" style="max-width: 480px; margin: 0 auto; display: flex; flex-direction: column; gap: 22px">
+    <div class="tk-split-head">
     <h2 id="rs-h-{{ section.id }}" style="margin: 0; display: flex; flex-direction: column; gap: 2px">
       <span class="rs-wide" style="font-size: 54px; line-height: .9">{{ section.settings.heading_a }}</span>
       <span class="rs-serif" style="font-size: 40px; line-height: 1; color: #B3202B">{{ section.settings.heading_b }}</span>
     </h2>
     <p style="margin: 0; font-size: 16px; line-height: 1.5; opacity: .8">{{ section.settings.subline }}</p>
+    </div>
 
+    <div class="tk-split-body">
     <tk-reviews>
       <script type="application/json">[
         {%- for block in section.blocks -%}
@@ -54,6 +57,7 @@
         <div class="rs-cap"><span class="rs-hand" data-quote aria-live="polite">{% if first %}“{{ first.settings.quote }}”{% endif %}</span></div>
       </div>
     </tk-reviews>
+    </div>
   </div>
 </section>
 <script>

@@ -18,10 +18,11 @@
   endif
 -%}
 <section
-  {% if faq %}aria-labelledby="faq-h-{{ section.id }}" class="tk-acc-wrap tk-acc-faq" style="max-width: 860px; margin: 0 auto; padding: 96px 24px"{% else %}aria-label="{{ section.settings.heading | default: 'Details' | escape }}" class="tk-acc-wrap tk-acc-pd" style="padding: 32px 20px 56px; max-width: 520px; margin: 0 auto"{% endif %}
+  {% if faq %}aria-labelledby="faq-h-{{ section.id }}" class="tk-acc-wrap tk-acc-faq tk-split" style="max-width: 860px; margin: 0 auto; padding: 96px 24px"{% else %}aria-label="{{ section.settings.heading | default: 'Details' | escape }}" class="tk-acc-wrap tk-acc-pd" style="padding: 32px 20px 56px; max-width: 520px; margin: 0 auto"{% endif %}
 >
     {%- if faq -%}
-      <h2 id="faq-h-{{ section.id }}" class="wide" style="margin: 0 0 32px; font-size: clamp(30px, 3.8vw, 48px)">{{ section.settings.heading }}</h2>
+      <div class="tk-split-head"><h2 id="faq-h-{{ section.id }}" class="wide" style="margin: 0 0 32px; font-size: clamp(30px, 3.8vw, 48px)">{{ section.settings.heading }}</h2></div>
+      <div class="tk-split-body">
     {%- endif -%}
     {%- for block in section.blocks -%}
       <details {{ block.shopify_attributes }}>
@@ -34,6 +35,7 @@
         </div>
       </details>
     {%- endfor -%}
+    {%- if faq -%}</div>{%- endif -%}
   </section>
 
 {% schema %}

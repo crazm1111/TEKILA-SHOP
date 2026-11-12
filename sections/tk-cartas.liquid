@@ -1,14 +1,15 @@
 {{ 'tk-cartas.css' | asset_url | stylesheet_tag }}
 <script src="{{ 'tk-cartas.js' | asset_url }}" defer></script>
 <section id="cartas" aria-labelledby="cj-h-{{ section.id }}" style="background: #D8C3A0">
-  <tk-cartas data-worker="{{ section.settings.worker_url | escape }}" data-shown="{{ section.settings.shown }}" style="display: block; padding: 48px 20px 56px; max-width: 520px; margin: 0 auto; position: relative">
+  <tk-cartas data-worker="{{ section.settings.worker_url | escape }}" data-shown="{{ section.settings.shown }}" class="tk-split-outer" style="display: block; padding: 48px 20px 56px; max-width: 520px; margin: 0 auto; position: relative">
     <script type="application/json" data-voices>[
       {%- for block in section.blocks -%}
         { "number": {{ block.settings.number | default: forloop.index }}, "src": {% capture s %}{% render 'tk-src', f: block.settings.audio %}{% endcapture %}{{ s | strip | json }} }{% unless forloop.last %},{% endunless %}
       {%- endfor -%}
     ]</script>
-    <div class="cj-stage">
-      <h2 id="cj-h-{{ section.id }}" class="wide" style="margin: 0; font-size: 44px; line-height: .92">Write one. <span class="cj-serif" style="color: #B3202B; font-size: 1.12em">Open one.</span></h2>
+    <div class="cj-stage tk-split">
+      <div class="tk-split-head"><h2 id="cj-h-{{ section.id }}" class="wide" style="margin: 0; font-size: 44px; line-height: .92">Write one. <span class="cj-serif" style="color: #B3202B; font-size: 1.12em">Open one.</span></h2></div>
+      <div class="tk-split-body">
 
       <div class="scene" data-scene="bag">
         <p style="margin: 0; font-size: 17px; line-height: 1.45" data-bagline>Strangers sealed their heaviest moment in here. Leave yours, open any one you like.</p>
@@ -91,6 +92,7 @@
         </div>
         <div class="seat" data-mine-seat hidden><span class="seat-tk">Nº <span data-myno></span></span><p style="margin: 0; font-size: 14px; line-height: 1.4">Your letter is in the running for this month's seat at the <span class="gword">Gathering</span>. We'll message you on WhatsApp.</p></div>
         <button type="button" class="link" data-back-bag>Back to the bag</button>
+      </div>
       </div>
     </div>
     <video class="cj-hidden-media" playsinline preload="none" aria-hidden="true" tabindex="-1" data-audio></video>
