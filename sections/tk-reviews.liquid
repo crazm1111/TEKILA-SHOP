@@ -29,20 +29,44 @@
     <p style="margin: 0; font-size: 16px; line-height: 1.5; opacity: .8">{{ section.settings.subline }}</p>
 
     <tk-reviews>
+      {%- comment -%}
+        One shared list for the homepage and the product page:
+        Shopify admin → Content → Metaobjects → Review video. Sorted by the Order field (empty = last).
+      {%- endcomment -%}
+      {%- liquid
+        assign all = shop.metaobjects.tekila_review.values
+        assign reviews = ''
+        for n in (1..200)
+          for r in all
+            assign o = r.order.value | plus: 0
+            if o == n
+              assign reviews = reviews | append: r.system.handle | append: ','
+            endif
+          endfor
+        endfor
+        for r in all
+          assign o = r.order.value | plus: 0
+          if o < 1 or o > 200
+            assign reviews = reviews | append: r.system.handle | append: ','
+          endif
+        endfor
+        assign handles = reviews | split: ','
+      -%}
       <script type="application/json">[
-        {%- for block in section.blocks -%}
-          { "src": {% capture s %}{% render 'tk-src', f: block.settings.video %}{% endcapture %}{{ s | strip | json }},
-            "poster": {% capture p %}{% render 'tk-src', f: block.settings.poster, w: 600 %}{% endcapture %}{{ p | strip | json }},
-            "quote": {{ block.settings.quote | json }} }{% unless forloop.last %},{% endunless %}
+        {%- for h in handles -%}
+          {%- assign r = shop.metaobjects.tekila_review[h] -%}
+          {%- capture src -%}{%- render 'tk-media', file: r.video.value -%}{%- endcapture -%}
+          {%- capture poster -%}{%- if r.poster.value -%}{%- render 'tk-media', file: r.poster.value, want: 'poster', w: 600 -%}{%- else -%}{%- render 'tk-media', file: r.video.value, want: 'poster', w: 600 -%}{%- endif -%}{%- endcapture -%}
+          { "src": {{ src | strip | json }}, "poster": {{ poster | strip | json }}, "quote": {{ r.caption.value | json }} }{% unless forloop.last %},{% endunless %}
         {%- endfor -%}
       ]</script>
-      {%- assign first = section.blocks.first -%}
+      {%- assign r0 = shop.metaobjects.tekila_review[handles.first] -%}
       <div class="rs-polaroid" data-pol>
         <div class="rs-screen">
           <video playsinline muted preload="none" data-tk-loop data-tk-hold
-            {% if first %}data-src="{%- render 'tk-src', f: first.settings.video -%}" poster="{%- render 'tk-src', f: first.settings.poster, w: 600 -%}"{% endif %}
+            {% if r0 %}data-src="{%- render 'tk-media', file: r0.video.value -%}" poster="{%- if r0.poster.value -%}{%- render 'tk-media', file: r0.poster.value, want: 'poster', w: 600 -%}{%- else -%}{%- render 'tk-media', file: r0.video.value, want: 'poster', w: 600 -%}{%- endif -%}"{% endif %}
             aria-label="Review video"></video>
-          <div class="rs-bars" aria-hidden="true">{%- for block in section.blocks -%}<span class="rs-bar"><i></i></span>{%- endfor -%}</div>
+          <div class="rs-bars" aria-hidden="true">{%- for h in handles -%}<span class="rs-bar"><i></i></span>{%- endfor -%}</div>
           <button type="button" class="rs-zone rs-prev" data-prev aria-label="Previous stranger"></button>
           <button type="button" class="rs-zone rs-next" data-next aria-label="Next stranger"></button>
           <button type="button" class="rs-sound" data-snd aria-pressed="false" aria-label="Turn sound on">
@@ -51,7 +75,7 @@
           </button>
           <span class="rs-hint" data-hint>Tap the speaker for sound</span>
         </div>
-        <div class="rs-cap"><span class="rs-hand" data-quote aria-live="polite">{% if first %}“{{ first.settings.quote }}”{% endif %}</span></div>
+        <div class="rs-cap"><span class="rs-hand" data-quote aria-live="polite">{% if r0 %}“{{ r0.caption.value }}”{% endif %}</span></div>
       </div>
     </tk-reviews>
   </div>
@@ -100,18 +124,8 @@
   "settings": [
     { "type": "text", "id": "heading_a", "label": "Heading, wide", "default": "They did" },
     { "type": "text", "id": "heading_b", "label": "Heading, serif", "default": "the scary thing." },
-    { "type": "textarea", "id": "subline", "label": "Subline", "default": "Reviews filmed inside our strangers gatherings. No friends, no plus-ones. Just strangers and TEKILA." }
-  ],
-  "blocks": [
-    {
-      "type": "review",
-      "name": "Review",
-      "settings": [
-        { "type": "text", "id": "video", "label": "Video (file name or URL)" },
-        { "type": "text", "id": "poster", "label": "Poster (file name or URL)" },
-        { "type": "text", "id": "quote", "label": "Quote on the photo" }
-      ]
-    }
+    { "type": "textarea", "id": "subline", "label": "Subline", "default": "Reviews filmed inside our strangers gatherings. No friends, no plus-ones. Just strangers and TEKILA." },
+    { "type": "paragraph", "content": "Review videos and captions are one shared list for the homepage and the product page. Add, replace, reorder or remove them in Shopify admin → Content → Metaobjects → Review video." }
   ],
   "presets": [{ "name": "TEKILA reviews" }]
 }
