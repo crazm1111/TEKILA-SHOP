@@ -12,10 +12,11 @@
 
       <div class="scene" data-scene="bag">
         <p style="margin: 0; font-size: 17px; line-height: 1.45" data-bagline>Strangers sealed their heaviest moment in here. Leave yours, open any one you like.</p>
-        <div class="seat" data-seat>
+        <button type="button" class="seat seat-btn" data-seat>
           <span class="seat-tk">FREE<br>SEAT</span>
-          <p style="margin: 0; font-size: 15px; line-height: 1.35">{{ section.settings.seat_line }} <span class="gword">Gathering</span></p>
-        </div>
+          <span style="font-size: 15px; line-height: 1.35">{{ section.settings.seat_line }} <span class="gword">Gathering</span></span>
+          <span class="seat-go" aria-hidden="true">Write →</span>
+        </button>
         <div class="bag" role="group" aria-label="Bag of sealed letters. Tap one for a taste." data-bag>
           <div class="peek" role="status" data-peek hidden>
             <p class="mono" style="margin: 0 0 6px; font-size: 10px; letter-spacing: .12em; opacity: .6" data-peek-label></p>
@@ -34,7 +35,7 @@
           <p class="mono" style="margin: 0 0 4px; font-size: 11px; letter-spacing: .12em; color: #B3202B" data-prompt aria-hidden="true">WHAT WAS THE MOMENT?</p>
           <label for="cj-letter-{{ section.id }}" class="cj-serif" style="display: block; font-size: 24px; line-height: 32px">Dear stranger,</label>
           <textarea id="cj-letter-{{ section.id }}" class="ta" maxlength="2000" placeholder="The last time I felt it was…" aria-describedby="cj-count-{{ section.id }}" data-text></textarea>
-          <p id="cj-count-{{ section.id }}" class="mono" style="margin: 8px 0 0; font-size: 12px; text-align: right; opacity: .7" data-counter aria-live="polite">120 more characters to seal</p>
+          <p id="cj-count-{{ section.id }}" class="mono" style="margin: 8px 0 0; font-size: 12px; text-align: right; opacity: .7" data-counter aria-live="polite">50 more characters to seal</p>
         </div>
         <button type="button" class="cj-btn" data-to-send disabled>Seal it</button>
         <button type="button" class="link" data-back>Back to the bag</button>

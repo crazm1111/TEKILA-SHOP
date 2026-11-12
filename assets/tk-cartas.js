@@ -3,7 +3,7 @@
 (function () {
   'use strict';
   if (customElements.get('tk-cartas')) return;
-  var MIN = 120;
+  var MIN = 50;
   var STAMPS = [
     { id: 'yo', ini: 'YT', word: 'Yo también', sub: 'I’ve been there', x: 14, y: 14, r: -8 },
     { id: 'gracias', ini: 'G', word: 'Gracias', sub: 'Thank you for writing this', x: 18, y: 18, r: 6 },
@@ -42,9 +42,14 @@
       var fallback = []; try { fallback = JSON.parse(this.q('[data-voices]').textContent); } catch (e) {}
       this.fallback = fallback.filter(function (v) { return v.src; }).map(function (v) { return { no: pad(v.number), voice: true, src: v.src, text: '', stamps: {}, fallback: true }; });
 
+      this.peekEl = this.q('[data-peek]');
+      document.body.appendChild(this.peekEl);
+      this.pq = function (s) { return self.peekEl.querySelector(s); };
       this.bindWrite();
       this.bindOpen();
-      this.q('[data-start]').addEventListener('click', function () { self.stopAudio(); self.hidePeek(); self.go('write'); var t = self.q('[data-text]'); setTimeout(function () { t.focus(); }, 50); });
+      var write = function () { self.stopAudio(); self.hidePeek(); self.go('write'); var t = self.q('[data-text]'); setTimeout(function () { t.focus(); }, 50); };
+      this.q('[data-start]').addEventListener('click', write);
+      this.q('[data-seat]').addEventListener('click', write);
       this.q('[data-back-bag]').addEventListener('click', function () { self.stopAudio(); self.go('bag'); });
       document.addEventListener('tk:sound', function (e) { if (e.detail.owner !== self.audio) self.stopAudio(); });
       document.addEventListener('tk:mute', function (e) { if (e.detail.muted) self.stopAudio(); });
@@ -137,27 +142,27 @@
       if (this.credits > 0 && l) { this.stopAudio(); this.hidePeek(); this.credits--; ss('tk-carta-credit', String(this.credits)); this.open(l); return; }
       if (!l) return;
       clearTimeout(this.peekT); this.stopAudio();
-      var peek = this.q('[data-peek]'), snip = this.q('[data-snip]');
+      var peek = this.peekEl, snip = this.pq('[data-snip]');
       peek.hidden = false;
       if (l.voice) {
-        this.q('[data-peek-label]').textContent = 'VOICE LETTER Nº ' + no + ' · SNIPPET';
-        this.q('[data-peek-text]').textContent = 'You’re hearing the first 5 seconds…';
-        this.q('[data-peek-more]').textContent = 'Write your letter to hear it all.';
+        this.pq('[data-peek-label]').textContent = 'VOICE LETTER Nº ' + no + ' · SNIPPET';
+        this.pq('[data-peek-text]').textContent = 'You’re hearing the first 5 seconds…';
+        this.pq('[data-peek-more]').textContent = 'Write your letter to hear it all.';
         snip.hidden = false; var i = snip.firstElementChild; i.className = ''; void i.offsetWidth; i.className = 'snip-run';
         this.playAudio(l.src);
-        this.tasteT = setTimeout(function () { self.stopAudio(); self.q('[data-peek-text]').textContent = 'That’s just a snippet.'; self.peekT = setTimeout(function () { self.hidePeek(); }, 3500); }, 5000);
+        this.tasteT = setTimeout(function () { self.stopAudio(); self.pq('[data-peek-text]').textContent = 'That’s just a snippet.'; self.peekT = setTimeout(function () { self.hidePeek(); }, 3500); }, 5000);
       } else {
         var words = (l.text || '').replace(/\s+/g, ' ').trim().split(' ');
         var frag = words.slice(Math.min(3, Math.max(0, words.length - 10)), Math.min(words.length, 12)).join(' ');
-        this.q('[data-peek-label]').textContent = 'CARTA Nº ' + no;
-        this.q('[data-peek-text]').textContent = frag ? '…' + frag + '…' : '…';
-        this.q('[data-peek-more]').textContent = 'Write yours to read the rest.';
+        this.pq('[data-peek-label]').textContent = 'CARTA Nº ' + no;
+        this.pq('[data-peek-text]').textContent = frag ? '…' + frag + '…' : '…';
+        this.pq('[data-peek-more]').textContent = 'Write yours to read the rest.';
         snip.hidden = true;
         b.classList.add('env-shake'); setTimeout(function () { b.classList.remove('env-shake'); }, 400);
         this.peekT = setTimeout(function () { self.hidePeek(); }, 3500);
       }
     }
-    hidePeek() { clearTimeout(this.peekT); var p = this.q('[data-peek]'); if (p) p.hidden = true; }
+    hidePeek() { clearTimeout(this.peekT); if (this.peekEl) this.peekEl.hidden = true; }
     playAudio(src) {
       var a = this.audio; if (!a || !src) return;
       if (window.TK) { TK.claimSound(a); if (TK.muted) TK.setMuted(false); }
@@ -171,7 +176,7 @@
       var self = this, t = this.q('[data-text]'), phone = this.q('[data-phone]'), sheet = this.q('[data-sheet]');
       var upd = function () {
         var len = t.value.trim().length;
-        self.q('[data-prompt]').textContent = len < 40 ? 'WHAT WAS THE MOMENT?' : (len < 120 ? 'WHAT DID YOUR BODY DO?' : (len < 260 ? 'DID YOU GO ANYWAY?' : 'KEEP GOING IF YOU WANT. WE READ EVERY WORD.'));
+        self.q('[data-prompt]').textContent = len < 20 ? 'WHAT WAS THE MOMENT?' : (len < MIN ? 'WHAT DID YOUR BODY DO?' : (len < 200 ? 'DID YOU GO ANYWAY?' : 'KEEP GOING IF YOU WANT. WE READ EVERY WORD.'));
         self.q('[data-counter]').textContent = len < MIN ? (MIN - len) + ' more characters to seal' : len + ' characters';
         self.q('[data-to-send]').disabled = len < MIN;
       };
