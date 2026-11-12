@@ -1,0 +1,82 @@
+# For every pull request: lint the theme, push it to an unpublished
+# preview theme on the store, and comment the preview link on the PR.
+# The preview theme is deleted when the PR is closed or merged.
+name: Theme preview
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, closed]
+
+permissions:
+  contents: read
+  pull-requests: write
+
+concurrency:
+  group: theme-preview-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+env:
+  SHOPIFY_FLAG_STORE: ${{ secrets.SHOPIFY_STORE }}
+  SHOPIFY_CLI_THEME_TOKEN: ${{ secrets.SHOPIFY_CLI_THEME_TOKEN }}
+  SHOPIFY_CLI_TTY: "0"
+  PREVIEW_NAME: "PR #${{ github.event.pull_request.number }} preview"
+
+jobs:
+  preview:
+    if: github.event.action != 'closed'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install Shopify CLI
+        run: npm install -g @shopify/cli@3
+
+      - name: Theme Check
+        # Reports problems in the job log; does not block the preview.
+        run: shopify theme check --path . --fail-level crash || true
+
+      - name: Push preview theme
+        id: push
+        run: |
+          EXISTING=$(shopify theme list --name "$PREVIEW_NAME" --json | jq -r '.[0].id // empty')
+          if [ -n "$EXISTING" ]; then
+            OUT=$(shopify theme push --theme "$EXISTING" --path . --json)
+          else
+            OUT=$(shopify theme push --unpublished --theme "$PREVIEW_NAME" --path . --json)
+          fi
+          echo "$OUT"
+          echo "preview_url=$(echo "$OUT" | jq -r '.theme.preview_url')" >> "$GITHUB_OUTPUT"
+          echo "editor_url=$(echo "$OUT" | jq -r '.theme.editor_url')" >> "$GITHUB_OUTPUT"
+
+      - name: Comment preview link
+        uses: actions/github-script@v7
+        env:
+          PREVIEW_URL: ${{ steps.push.outputs.preview_url }}
+          EDITOR_URL: ${{ steps.push.outputs.editor_url }}
+        with:
+          script: |
+            const marker = '<!-- theme-preview -->';
+            const body = `${marker}\n### 🛍️ Theme preview ready\n\n- **Preview:** ${process.env.PREVIEW_URL}\n- **Customize:** ${process.env.EDITOR_URL}\n\n_Updated for ${context.sha.slice(0, 7)}. Merge to \`main\` to go live._`;
+            const { owner, repo } = context.repo;
+            const issue_number = context.issue.number;
+            const comments = await github.paginate(github.rest.issues.listComments, { owner, repo, issue_number });
+            const mine = comments.find(c => c.body && c.body.includes(marker));
+            if (mine) await github.rest.issues.updateComment({ owner, repo, comment_id: mine.id, body });
+            else await github.rest.issues.createComment({ owner, repo, issue_number, body });
+
+  cleanup:
+    if: github.event.action == 'closed'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - run: npm install -g @shopify/cli@3
+      - name: Delete preview theme
+        run: |
+          ID=$(shopify theme list --name "$PREVIEW_NAME" --json | jq -r '.[0].id // empty')
+          if [ -n "$ID" ]; then shopify theme delete --theme "$ID" --force; fi

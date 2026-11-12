@@ -1,0 +1,56 @@
+# Pulls theme files from Shopify into this branch and commits them.
+# Use it once to import the current live theme, and any time you want to
+# re-sync changes that were made directly in Shopify (code editor / apps).
+name: Pull theme from Shopify
+
+on:
+  workflow_dispatch:
+    inputs:
+      theme:
+        description: "Theme ID or name to pull (leave empty for the LIVE theme)"
+        required: false
+        default: ""
+
+permissions:
+  contents: write
+
+concurrency:
+  group: theme-pull-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  pull:
+    runs-on: ubuntu-latest
+    env:
+      SHOPIFY_FLAG_STORE: ${{ secrets.SHOPIFY_STORE }}
+      SHOPIFY_CLI_THEME_TOKEN: ${{ secrets.SHOPIFY_CLI_THEME_TOKEN }}
+      SHOPIFY_CLI_TTY: "0"
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install Shopify CLI
+        run: npm install -g @shopify/cli@3
+
+      - name: Pull theme
+        run: |
+          if [ -z "${{ inputs.theme }}" ]; then
+            shopify theme pull --live --path . --force
+          else
+            shopify theme pull --theme "${{ inputs.theme }}" --path . --force
+          fi
+
+      - name: Commit changes
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          if git diff --cached --quiet; then
+            echo "Theme already up to date."
+          else
+            git commit -m "Sync theme from Shopify (${{ inputs.theme || 'live' }})"
+            git push
+          fi
