@@ -16,7 +16,7 @@ var HEAD = ['Number', 'Created', 'Status', 'Type', 'Text', 'Audio URL', 'WhatsAp
 var C = { number: 1, created: 2, status: 3, type: 4, text: 5, audio: 6, phone: 7, priv: 8,
           yo: 9, gracias: 10, respira: 11, total: 12, notes: 13 };
 var STAMP_COL = { yo: C.yo, gracias: C.gracias, respira: C.respira };
-var MIN_LEN = 120, MAX_LEN = 2000;
+var MIN_LEN = 50, MAX_LEN = 2000;
 var LIST_CACHE = 'cartas-list-v1', LIST_TTL = 120;          // seconds the public list is cached
 var LIMITS = { seal: [20, 600], stamp: [400, 600] };       // max requests per window (seconds)
 

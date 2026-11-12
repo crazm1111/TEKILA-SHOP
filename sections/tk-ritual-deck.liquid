@@ -15,6 +15,15 @@
 .rd-cream{background:#F4EADA;color:#171310}
 .rd-p1 .rd-inner,.rd-p2 .rd-inner,.rd-p3 .rd-inner{opacity:0}
 .rd-fly{z-index:4;transform:translateX(-130%) rotate(-14deg)!important;opacity:0}
+.rd-fly-r{z-index:4;transform:translateX(130%) rotate(14deg)!important;opacity:0}
+.rd-drag{transition:none!important;cursor:grabbing}
+.rd-deck{cursor:grab}
+.rd-hint{position:absolute;inset:0;z-index:6;border-radius:24px;background:rgba(14,11,9,.55);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;color:#F4EADA;pointer-events:none;opacity:0;transition:opacity .35s ease}
+.rd-hint-on{opacity:1}
+.rd-hint-t{padding:0 20px;text-align:center;font:900 18px var(--tk-f-sans);font-stretch:125%;letter-spacing:.04em;text-transform:uppercase}
+.rd-hint-s{font:600 12px var(--tk-f-mono);letter-spacing:.1em;opacity:.8}
+.rd-hand{display:flex;align-items:center;gap:6px;color:#E9A93C;animation:rdSwipe 1s ease-in-out infinite}
+@keyframes rdSwipe{0%{transform:translateX(-24px);opacity:.3}60%{transform:translateX(24px);opacity:1}100%{transform:translateX(24px);opacity:0}}
 .rd-inner{position:absolute;inset:0;display:flex;flex-direction:column;transition:opacity .4s}
 .rd-photo{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
 .rd-shade{position:absolute;inset:0;background:linear-gradient(180deg,rgba(14,11,9,0) 25%,rgba(14,11,9,.55) 52%,rgba(14,11,9,.96) 100%)}
@@ -104,6 +113,10 @@
           <p class="rd-serif" style="margin: 0; font-size: 32px; line-height: 1.12">Do it every time, and the scent becomes <span style="color: #B3202B">your signal to slow down.</span></p>
         </div>
       </div>
+      <div class="rd-hint" aria-hidden="true" data-hint>
+        <span class="rd-hand"><svg width="44" height="24" viewBox="0 0 44 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12h38M30 3l10 9-10 9"/></svg></span>
+        <span class="rd-hint-t">Swipe to the right</span>
+      </div>
     </div>
 
     <div style="display: flex; justify-content: space-between; align-items: center">
@@ -119,24 +132,26 @@
     connectedCallback() {
       var cards = this.querySelectorAll('.rd-card'), pgs = this.querySelectorAll('.rd-pg'), deck = this.querySelector('[data-deck]');
       var kicker = this.querySelector('[data-kicker]'), circ = this.querySelector('[data-circ]'), core = this.querySelector('[data-core]'), phase = this.querySelector('[data-phase]');
-      var i = 0, busy = false, x0 = null, swiped = false, bt = null, ph = 'idle', sec = 4, round = 0, mi = 0;
+      var i = 0, busy = false, x0 = null, y0 = 0, dx = 0, drag = false, swiped = false, bt = null, ph = 'idle', sec = 4, round = 0, mi = 0;
       var moments = []; try { moments = JSON.parse(this.querySelector('[data-moments]').textContent).map(function (m) { return m.trim(); }).filter(Boolean); } catch (e) {}
       var letterLine = function () { try { return sessionStorage.getItem('tk-letter-line'); } catch (e) { return null; } };
       var setKicker = function () { var l = letterLine(); kicker.textContent = l ? '“' + l.replace(/^[“"]|[”"]$/g, '') + '”' : (moments[mi % moments.length] || ''); };
       setKicker();
       setInterval(function () { mi++; if (!letterLine()) setKicker(); }, 3000);
       document.addEventListener('tk:letter', setKicker);
+      var top = function () { return cards[i]; };
       var layout = function (flying) {
         cards.forEach(function (c, k) {
           var pos = (k - i + 4) % 4;
-          c.className = 'rd-card rd-p' + pos + (pos === 0 && flying ? ' rd-fly' : '');
+          c.style.transform = '';
+          c.className = 'rd-card rd-p' + pos + (pos === 0 && flying ? (flying === 'right' ? ' rd-fly-r' : ' rd-fly') : '');
           c.setAttribute('aria-hidden', pos === 0 ? 'false' : 'true');
           c.querySelectorAll('button').forEach(function (b) { b.tabIndex = pos === 0 ? 0 : -1; });
         });
         pgs.forEach(function (p, k) { p.className = 'rd-pg' + (k === i ? ' rd-pg-on' : ''); });
       };
-      var next = function () {
-        if (busy) return; busy = true; layout(true);
+      var next = function (dir) {
+        if (busy) return; busy = true; layout(dir === 'right' ? 'right' : 'left');
         setTimeout(function () { busy = false; i = (i + 1) % 4; layout(false); }, (window.TK && TK.reduced()) ? 0 : 380);
       };
       var prev = function () { if (!busy) { i = (i + 3) % 4; layout(false); } };
@@ -150,8 +165,7 @@
         phase.appendChild(document.createTextNode((ph === 'in' || ph === 'prep') ? 'Breathe in ' : (ph === 'out' ? 'Breathe out ' : (ph === 'done' ? 'Ready. ' : 'Tap the circle '))));
         var s = document.createElement('span'); s.textContent = active ? '· ' + round + ' of 3' : ''; phase.appendChild(s);
       };
-      core.addEventListener('click', function () {
-        if (swiped) { swiped = false; return; }
+      var breathe = function () {
         if (ph === 'in' || ph === 'out' || ph === 'prep') return;
         clearInterval(bt); ph = 'prep'; sec = 4; round = 1; renderBreath();
         setTimeout(function () { ph = 'in'; renderBreath(); }, 40);
@@ -160,17 +174,55 @@
           if (ph === 'in') { ph = 'out'; sec = 4; renderBreath(); return; }
           if (round < 3) { ph = 'in'; sec = 4; round++; renderBreath(); return; }
           clearInterval(bt); ph = 'done'; renderBreath();
-          setTimeout(function () { if (i === 1) next(); }, 1200);
+          setTimeout(function () { if (i === 1 && ph === 'done') next(); }, 1200);
         }, 1000);
-      });
-      this.querySelector('[data-next]').addEventListener('click', next);
+      };
+      core.addEventListener('click', function () { if (swiped) { swiped = false; return; } breathe(); });
+      this.querySelector('[data-next]').addEventListener('click', function () { next(); });
       this.querySelector('[data-prev]').addEventListener('click', prev);
-      deck.addEventListener('pointerdown', function (e) { x0 = e.clientX; swiped = false; });
-      deck.addEventListener('pointerup', function (e) {
-        if (x0 == null) return; var dx = e.clientX - x0; x0 = null;
-        if (Math.abs(dx) > 40) { swiped = true; setTimeout(function () { swiped = false; }, 300); }
-        if (dx < -40) next(); else if (dx > 40) prev();
+      /* Drag the top card: it follows the finger; throw it to the right for the next card.
+         A plain tap also moves on, except on the Breathe card, where a tap starts the breathing. */
+      deck.addEventListener('pointerdown', function (e) {
+        if (busy || (e.pointerType === 'mouse' && e.button !== 0)) return;
+        x0 = e.clientX; y0 = e.clientY; dx = 0; drag = false; swiped = false;
       });
+      deck.addEventListener('pointermove', function (e) {
+        if (x0 == null) return;
+        dx = e.clientX - x0;
+        if (!drag && Math.abs(dx) > 8 && Math.abs(dx) > Math.abs(e.clientY - y0)) {
+          drag = true; top().classList.add('rd-drag');
+          try { deck.setPointerCapture(e.pointerId); } catch (er) {}
+        }
+        // right only: dragging left just resists a little and springs back
+        var shown = dx > 0 ? dx : dx * 0.15;
+        if (drag) top().style.transform = 'translateX(' + shown + 'px) rotate(' + (shown / 18) + 'deg)';
+      });
+      var release = function (e, cancelled) {
+        if (x0 == null) return;
+        var moved = Math.abs(dx) > 8 || Math.abs(e.clientY - y0) > 8, wasDrag = drag;
+        x0 = null; drag = false; top().classList.remove('rd-drag');
+        if (wasDrag) {
+          swiped = true; setTimeout(function () { swiped = false; }, 300);
+          if (!cancelled && dx > 60) next('right'); else top().style.transform = '';
+          return;
+        }
+        if (cancelled || moved) return;
+        if (e.target.closest('[data-core]')) return;           // the circle button handles its own tap
+        if (i === 1) breathe(); else next();
+      };
+      deck.addEventListener('pointerup', function (e) { release(e, false); });
+      deck.addEventListener('pointercancel', function (e) { release(e, true); });
+
+      /* First time the deck comes into view: a short "swipe" overlay, gone after about a second. */
+      var hint = this.querySelector('[data-hint]');
+      if (hint && 'IntersectionObserver' in window) {
+        var io = new IntersectionObserver(function (en) {
+          if (!en[0].isIntersecting) return; io.disconnect();
+          hint.classList.add('rd-hint-on');
+          setTimeout(function () { hint.classList.remove('rd-hint-on'); }, 2500);
+        }, { threshold: 0.6 });
+        io.observe(deck);
+      }
       layout(false);
     }
   });
