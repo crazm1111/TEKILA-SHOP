@@ -11,15 +11,12 @@
 {%- endstyle -%}
 <span id="passport"></span>
 <section aria-labelledby="ba-h-{{ section.id }}" style="background: #0E0B09; color: #F4EADA; padding: 72px 24px 80px; overflow: hidden">
-  <div class="tk-split tk-split-center" style="max-width: 440px; margin: 0 auto; display: flex; flex-direction: column; gap: 28px; text-align: center">
-    <div class="tk-split-head">
+  <div style="max-width: 440px; margin: 0 auto; display: flex; flex-direction: column; gap: 28px; text-align: center">
     <p class="mono" style="margin: 0; font-size: 11px; letter-spacing: .3em; opacity: .6">LOTE Nº <tk-time format="batch">01</tk-time></p>
     <h2 id="ba-h-{{ section.id }}" style="margin: -8px 0 0; display: flex; flex-direction: column; align-items: center">
       <span class="serif-i" style="font-size: 44px; line-height: 1">{{ section.settings.heading_a }}</span>
       <span class="wide" style="font-size: 50px; line-height: .9; color: #E9A93C">{{ section.settings.heading_b }}</span>
     </h2>
-    </div>
-    <div class="tk-split-body">
     <div class="ba-stage" aria-hidden="true">
       <div class="ba-glow"></div>
       {%- render 'tk-bottle', cls: 'ba-bottle', w: 300 -%}
@@ -31,7 +28,6 @@
       <div><p class="ba-k" style="margin: 0 0 6px">Order now, yours arrives</p><p class="ba-v" style="margin: 0"><tk-time format="arrive">in ~10 days</tk-time></p></div>
     </div>
     <a href="#reserve" class="ba-link">Reserve for Lote <tk-time format="batch">01</tk-time></a>
-    </div>
   </div>
 </section>
 
