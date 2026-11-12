@@ -116,7 +116,6 @@
       <div class="rd-hint" aria-hidden="true" data-hint>
         <span class="rd-hand"><svg width="44" height="24" viewBox="0 0 44 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12h38M30 3l10 9-10 9"/></svg></span>
         <span class="rd-hint-t">Swipe to the right</span>
-        <span class="rd-hint-s">or tap the card</span>
       </div>
     </div>
 
@@ -181,7 +180,7 @@
       core.addEventListener('click', function () { if (swiped) { swiped = false; return; } breathe(); });
       this.querySelector('[data-next]').addEventListener('click', function () { next(); });
       this.querySelector('[data-prev]').addEventListener('click', prev);
-      /* Drag the top card: it follows the finger; throw it left or right for the next card.
+      /* Drag the top card: it follows the finger; throw it to the right for the next card.
          A plain tap also moves on, except on the Breathe card, where a tap starts the breathing. */
       deck.addEventListener('pointerdown', function (e) {
         if (busy || (e.pointerType === 'mouse' && e.button !== 0)) return;
@@ -194,7 +193,9 @@
           drag = true; top().classList.add('rd-drag');
           try { deck.setPointerCapture(e.pointerId); } catch (er) {}
         }
-        if (drag) top().style.transform = 'translateX(' + dx + 'px) rotate(' + (dx / 18) + 'deg)';
+        // right only: dragging left just resists a little and springs back
+        var shown = dx > 0 ? dx : dx * 0.15;
+        if (drag) top().style.transform = 'translateX(' + shown + 'px) rotate(' + (shown / 18) + 'deg)';
       });
       var release = function (e, cancelled) {
         if (x0 == null) return;
@@ -202,7 +203,7 @@
         x0 = null; drag = false; top().classList.remove('rd-drag');
         if (wasDrag) {
           swiped = true; setTimeout(function () { swiped = false; }, 300);
-          if (!cancelled && Math.abs(dx) > 60) next(dx > 0 ? 'right' : 'left'); else top().style.transform = '';
+          if (!cancelled && dx > 60) next('right'); else top().style.transform = '';
           return;
         }
         if (cancelled || moved) return;
@@ -218,7 +219,7 @@
         var io = new IntersectionObserver(function (en) {
           if (!en[0].isIntersecting) return; io.disconnect();
           hint.classList.add('rd-hint-on');
-          setTimeout(function () { hint.classList.remove('rd-hint-on'); }, 1300);
+          setTimeout(function () { hint.classList.remove('rd-hint-on'); }, 2500);
         }, { threshold: 0.6 });
         io.observe(deck);
       }

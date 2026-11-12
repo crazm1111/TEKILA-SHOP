@@ -14,6 +14,15 @@
   var ss = function (k, v) { try { if (v === undefined) return sessionStorage.getItem(k); if (v === null) sessionStorage.removeItem(k); else sessionStorage.setItem(k, v); } catch (e) { return null; } };
   var ls = function (k, v) { try { if (v === undefined) return localStorage.getItem(k); localStorage.setItem(k, v); } catch (e) { return null; } };
   var sfx = function (fn) { if (window.TK && TK[fn]) TK[fn](); };
+  /* A short slice from the middle of a letter for the snippet: about 7 words, at most ~55 characters. */
+  var middle = function (text) {
+    var w = String(text || '').replace(/\s+/g, ' ').trim().split(' ').filter(Boolean);
+    if (!w.length) return '…';
+    var n = Math.min(7, w.length), start = Math.max(0, Math.floor((w.length - n) / 2)), frag = w.slice(start, start + n);
+    while (frag.length > 3 && frag.join(' ').length > 55) frag.pop();
+    var s = frag.join(' '); if (s.length > 55) s = s.slice(0, 54);
+    return '…' + s.replace(/[.,;:!?]+$/, '') + '…';
+  };
   var toLetter = function (l) { return { no: pad(l.number), voice: l.type === 'voice', src: l.audio || '', text: l.text || '', stamps: l.stamps || {} }; };
   /* Backend calls. Apps Script URLs (script.google.com/.../exec) take ?action= and text/plain JSON
      posts (no CORS preflight); any other URL is treated as the older REST worker. */
@@ -45,6 +54,7 @@
       this.peekEl = this.q('[data-peek]');
       document.body.appendChild(this.peekEl);
       this.pq = function (s) { return self.peekEl.querySelector(s); };
+      this.pq('[data-peek-play]').addEventListener('click', function () { if (self.snipOn) self.pauseSnip(); else self.playSnip(); });
       this.bindWrite();
       this.bindOpen();
       var write = function () { self.stopAudio(); self.hidePeek(); self.go('write'); var t = self.q('[data-text]'); setTimeout(function () { t.focus(); }, 50); };
@@ -142,34 +152,65 @@
       if (this.credits > 0 && l) { this.stopAudio(); this.hidePeek(); this.credits--; ss('tk-carta-credit', String(this.credits)); this.open(l); return; }
       if (!l) return;
       clearTimeout(this.peekT); this.stopAudio();
-      var peek = this.peekEl, snip = this.pq('[data-snip]');
+      var peek = this.peekEl;
       peek.hidden = false;
       if (l.voice) {
+        // Voice: nothing plays until the visitor presses play (5-second snippet, can pause and resume).
+        this.snipSrc = l.src; this.snipLeft = 5000; this.snipStarted = false;
         this.pq('[data-peek-label]').textContent = 'VOICE LETTER Nº ' + no + ' · SNIPPET';
-        this.pq('[data-peek-text]').textContent = 'You’re hearing the first 5 seconds…';
+        this.pq('[data-peek-text]').textContent = 'Press play to hear the first 5 seconds.';
         this.pq('[data-peek-more]').textContent = 'Write your letter to hear it all.';
-        snip.hidden = false; var i = snip.firstElementChild; i.className = ''; void i.offsetWidth; i.className = 'snip-run';
-        this.playAudio(l.src);
-        this.tasteT = setTimeout(function () { self.stopAudio(); self.pq('[data-peek-text]').textContent = 'That’s just a snippet.'; self.peekT = setTimeout(function () { self.hidePeek(); }, 3500); }, 5000);
+        this.pq('[data-peek-voice]').hidden = false;
+        this.resetSnipBar(); this.snipIcon(false);
+        this.peekT = setTimeout(function () { self.hidePeek(); }, 8000);
       } else {
-        var words = (l.text || '').replace(/\s+/g, ' ').trim().split(' ');
-        var frag = words.slice(Math.min(3, Math.max(0, words.length - 10)), Math.min(words.length, 12)).join(' ');
         this.pq('[data-peek-label]').textContent = 'CARTA Nº ' + no;
-        this.pq('[data-peek-text]').textContent = frag ? '…' + frag + '…' : '…';
+        this.pq('[data-peek-text]').textContent = middle(l.text);
         this.pq('[data-peek-more]').textContent = 'Write yours to read the rest.';
-        snip.hidden = true;
+        this.pq('[data-peek-voice]').hidden = true;
         b.classList.add('env-shake'); setTimeout(function () { b.classList.remove('env-shake'); }, 400);
         this.peekT = setTimeout(function () { self.hidePeek(); }, 3500);
       }
     }
-    hidePeek() { clearTimeout(this.peekT); if (this.peekEl) this.peekEl.hidden = true; }
+    hidePeek() { clearTimeout(this.peekT); if (this.snipOn) this.pauseSnip(); if (this.peekEl) this.peekEl.hidden = true; }
+    resetSnipBar() { var i = this.pq('[data-snip]').firstElementChild; i.className = ''; void i.offsetWidth; i.className = 'snip-run snip-paused'; }
+    snipIcon(on) {
+      this.pq('[data-pp-play]').hidden = on; this.pq('[data-pp-pause]').hidden = !on;
+      this.pq('[data-peek-play]').setAttribute('aria-label', on ? 'Pause the snippet' : 'Play the snippet');
+    }
+    playSnip() {
+      var self = this, a = this.audio; if (!a || !this.snipSrc) return;
+      clearTimeout(this.peekT);
+      if (this.snipLeft <= 0) { this.snipLeft = 5000; this.snipStarted = false; this.resetSnipBar(); }
+      if (window.TK) { TK.claimSound(a); if (TK.muted) TK.setMuted(false); }
+      if (a.getAttribute('src') !== this.snipSrc) a.src = this.snipSrc;
+      if (!this.snipStarted) a.currentTime = 0;
+      this.snipStarted = true; a.muted = false; window.TK ? TK.play(a) : a.play();
+      this.snipOn = true; this.snipAt = Date.now(); this.snipIcon(true);
+      this.pq('[data-snip]').firstElementChild.classList.remove('snip-paused');
+      this.pq('[data-peek-text]').textContent = 'Listening…';
+      this.tasteT = setTimeout(function () {
+        self.pauseSnip(); self.snipLeft = 0;
+        self.pq('[data-peek-text]').textContent = 'That’s just a snippet.';
+        self.peekT = setTimeout(function () { self.hidePeek(); }, 3500);
+      }, this.snipLeft);
+    }
+    pauseSnip() {
+      if (!this.snipOn) return;
+      this.snipOn = false; clearTimeout(this.tasteT);
+      this.snipLeft = Math.max(0, this.snipLeft - (Date.now() - this.snipAt));
+      if (this.audio && !this.audio.paused) this.audio.pause();
+      this.pq('[data-snip]').firstElementChild.classList.add('snip-paused');
+      this.snipIcon(false);
+      if (this.snipLeft > 0) this.pq('[data-peek-text]').textContent = 'Paused.';
+    }
     playAudio(src) {
       var a = this.audio; if (!a || !src) return;
       if (window.TK) { TK.claimSound(a); if (TK.muted) TK.setMuted(false); }
       if (a.getAttribute('src') !== src) a.src = src;
       a.currentTime = 0; a.muted = false; window.TK ? TK.play(a) : a.play();
     }
-    stopAudio() { clearTimeout(this.tasteT); if (this.audio && !this.audio.paused) this.audio.pause(); this.setPlaying(false); }
+    stopAudio() { if (this.snipOn) this.pauseSnip(); clearTimeout(this.tasteT); if (this.audio && !this.audio.paused) this.audio.pause(); this.setPlaying(false); }
 
     /* ---------- write + seal ---------- */
     bindWrite() {

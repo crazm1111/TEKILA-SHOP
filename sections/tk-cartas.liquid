@@ -21,7 +21,13 @@
           <div class="peek" role="status" data-peek hidden>
             <p class="mono" style="margin: 0 0 6px; font-size: 10px; letter-spacing: .12em; opacity: .6" data-peek-label></p>
             <p class="cj-serif" style="margin: 0; font-size: 19px; line-height: 1.3" data-peek-text></p>
-            <div class="snip" aria-hidden="true" data-snip hidden><i></i></div>
+            <div class="peek-voice" data-peek-voice hidden>
+              <button type="button" class="peek-play" data-peek-play aria-label="Play the snippet">
+                <svg data-pp-play width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M7 4.5v15l13-7.5z"/></svg>
+                <svg data-pp-pause hidden width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><rect x="6" y="5" width="4" height="14"/><rect x="14" y="5" width="4" height="14"/></svg>
+              </button>
+              <div class="snip" aria-hidden="true" data-snip><i></i></div>
+            </div>
             <p class="mono" style="margin: 8px 0 0; font-size: 11px; color: #B3202B" data-peek-more></p>
           </div>
           <span class="hint" data-hint hidden>Tap any letter to open it</span>
