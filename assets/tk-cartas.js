@@ -68,7 +68,11 @@
     }
     setLetters(raw) {
       var list = raw.map(toLetter);
-      if (!list.some(function (l) { return l.voice; })) list = this.fallback.concat(list);
+      if (!list.some(function (l) { return l.voice; })) {
+        // Sample voice letters fill the bag until real ones exist; a real letter with the same number wins.
+        var taken = {}; list.forEach(function (l) { taken[l.no] = 1; });
+        list = this.fallback.filter(function (f) { return !taken[f.no]; }).concat(list);
+      }
       this.letters = list.slice(0, this.shown);
       this.renderBag();
     }
