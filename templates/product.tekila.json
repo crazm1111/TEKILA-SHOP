@@ -30,6 +30,7 @@
         "c1": {
           "type": "clip",
           "settings": {
+            "video": "shopify://files/videos/IMG_4060.mov",
             "caption": "The dancing",
             "video_file": "gather-2.mp4",
             "poster_file": "gather-2.jpg"
