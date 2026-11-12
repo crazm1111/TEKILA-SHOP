@@ -42,6 +42,7 @@
           <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="cj-wa-l-{{ section.id }}">
             <label id="cj-wa-l-{{ section.id }}" for="cj-wa-{{ section.id }}" style="font-size: 18px; font-weight: 700">Your WhatsApp, so we can write back</label>
             <input id="cj-wa-{{ section.id }}" class="field" type="tel" inputmode="tel" autocomplete="tel" placeholder="+20 10…" data-phone aria-invalid="false">
+            <input type="text" name="website" tabindex="-1" autocomplete="off" aria-hidden="true" style="position: absolute; left: -9999px; width: 1px; height: 1px; opacity: 0" data-hp>
             <label class="check"><input type="checkbox" data-private><span>Keep my letter private. Only the TEKILA team reads it.</span></label>
             <p style="margin: 0; font-size: 12px; line-height: 1.45; opacity: .75">By sealing, you confirm you're 18 or older. We read every letter and remove names before any stranger sees it.</p>
             <button type="button" class="cj-btn" data-seal disabled>Seal &amp; send</button>
@@ -100,10 +101,10 @@
 {
   "name": "TEKILA cartas",
   "settings": [
-    { "type": "text", "id": "worker_url", "label": "Cartas worker URL", "info": "e.g. https://tekila-cartas.<account>.workers.dev" },
+    { "type": "text", "id": "worker_url", "label": "Cartas backend URL", "info": "The Google Apps Script web app URL (ends in /exec). Letters are saved to the Cartas sheet; set Status to Show there to put a letter in the bag." },
     { "type": "range", "id": "shown", "label": "Letters in the bag", "min": 6, "max": 36, "step": 1, "default": 20 },
     { "type": "text", "id": "seat_line", "label": "Seat line", "default": "Best letter each month wins a seat at our next" },
-    { "type": "paragraph", "content": "Voice letters below are a fallback shown when the worker has none yet. Approved voice letters from the carta metaobjects replace them." }
+    { "type": "paragraph", "content": "Voice letters below are a fallback shown while the sheet has no voice letters marked Show. Add a row with Type = voice and an Audio URL in the sheet to replace them." }
   ],
   "blocks": [
     {

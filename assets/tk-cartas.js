@@ -1,4 +1,5 @@
-/* Cartas: a bag of sealed letters. Write one (stored as pending via the worker), then open one and stamp it. */
+/* Cartas: a bag of sealed letters. Write one (stored as Pending in the Cartas Google Sheet via its
+   Apps Script web app), then open one and stamp it. The sheet's Status column decides what is shown. */
 (function () {
   'use strict';
   if (customElements.get('tk-cartas')) return;
@@ -13,6 +14,16 @@
   var ss = function (k, v) { try { if (v === undefined) return sessionStorage.getItem(k); if (v === null) sessionStorage.removeItem(k); else sessionStorage.setItem(k, v); } catch (e) { return null; } };
   var ls = function (k, v) { try { if (v === undefined) return localStorage.getItem(k); localStorage.setItem(k, v); } catch (e) { return null; } };
   var sfx = function (fn) { if (window.TK && TK[fn]) TK[fn](); };
+  var toLetter = function (l) { return { no: pad(l.number), voice: l.type === 'voice', src: l.audio || '', text: l.text || '', stamps: l.stamps || {} }; };
+  /* Backend calls. Apps Script URLs (script.google.com/.../exec) take ?action= and text/plain JSON
+     posts (no CORS preflight); any other URL is treated as the older REST worker. */
+  var api = function (base, action, data) {
+    var gas = /script\.google(usercontent)?\.com/.test(base);
+    if (action === 'list') return fetch(gas ? base + '?action=list&limit=' + data.limit : base + '/cartas?limit=' + data.limit, { headers: { accept: 'application/json' } });
+    if (gas) return fetch(base, { method: 'POST', body: JSON.stringify(Object.assign({ action: action }, data)) });
+    var path = action === 'stamp' ? '/cartas/' + data.number + '/stamp' : '/cartas';
+    return fetch(base + path, { method: 'POST', headers: { 'Content-Type': 'application/json', accept: 'application/json' }, body: JSON.stringify(action === 'stamp' ? { type: data.type } : data) });
+  };
 
   customElements.define('tk-cartas', class extends HTMLElement {
     connectedCallback() {
@@ -43,14 +54,25 @@
 
     /* ---------- data ---------- */
     async load() {
-      var list = [];
-      if (this.worker) {
-        try {
-          var r = await fetch(this.worker + '/cartas?limit=' + this.shown, { headers: { accept: 'application/json' } });
-          if (r.ok) { var j = await r.json(); list = (j.letters || []).map(function (l) { return { no: pad(l.number), voice: l.type === 'voice', src: l.audio || '', text: l.text || '', stamps: l.stamps || {} }; }); }
-        } catch (e) {}
+      // Show the last bag this visitor saw right away (Apps Script takes 1-2s), then refresh it.
+      var cached = null; try { cached = JSON.parse(ls('tk-cartas-bag') || 'null'); } catch (e) {}
+      this.setLetters(cached || []);
+      if (!this.worker) return;
+      try {
+        var r = await api(this.worker, 'list', { limit: this.shown });
+        if (!r.ok) return;
+        var j = await r.json(); if (!j.letters) return;
+        ls('tk-cartas-bag', JSON.stringify(j.letters));
+        if (!cached || this.step === 'bag') this.setLetters(j.letters);
+      } catch (e) {}
+    }
+    setLetters(raw) {
+      var list = raw.map(toLetter);
+      if (!list.some(function (l) { return l.voice; })) {
+        // Sample voice letters fill the bag until real ones exist; a real letter with the same number wins.
+        var taken = {}; list.forEach(function (l) { taken[l.no] = 1; });
+        list = this.fallback.filter(function (f) { return !taken[f.no]; }).concat(list);
       }
-      if (!list.some(function (l) { return l.voice; })) list = this.fallback.concat(list);
       this.letters = list.slice(0, this.shown);
       this.renderBag();
     }
@@ -171,7 +193,7 @@
       btn.disabled = true; btn.textContent = 'Sealing…';
       var number = null;
       try {
-        var r = await fetch(this.worker + '/cartas', { method: 'POST', headers: { 'Content-Type': 'application/json', accept: 'application/json' }, body: JSON.stringify({ text: text, phone: phone, private: priv }) });
+        var r = await api(this.worker, 'seal', { text: text, phone: phone, private: priv, hp: (this.q('[data-hp]') || {}).value || '' });
         var j = {}; try { j = await r.json(); } catch (e) {}
         if (!r.ok || !j.number) throw new Error(j.error || 'We could not seal it. Try again in a minute.');
         number = j.number;
@@ -265,7 +287,7 @@
       this.stamped[l.no] = s.id; ls('tk-stamped', JSON.stringify(this.stamped));
       this.renderStamps('done');
       if (this.worker && !l.fallback) {
-        fetch(this.worker + '/cartas/' + parseInt(l.no, 10) + '/stamp', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ type: s.id }) }).catch(function () {});
+        api(this.worker, 'stamp', { number: parseInt(l.no, 10), type: s.id }).catch(function () {});
       }
     }
   });

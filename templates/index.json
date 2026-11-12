@@ -35,7 +35,7 @@
         "v4": { "type": "voice", "settings": { "number": 4, "audio": "phone-4.mp4" } }
       },
       "block_order": ["v1", "v2", "v3", "v4"],
-      "settings": { "worker_url": "", "shown": 20, "seat_line": "Best letter each month wins a seat at our next" }
+      "settings": { "worker_url": "https://script.google.com/macros/s/AKfycbwIpLbOsShwKXNP1urmNBemKzjta3nyo9SLs-qa4U23uyYT1duN-eFSi7Xex-HLqlyR/exec", "shown": 20, "seat_line": "Best letter each month wins a seat at our next" }
     },
     "ritual": {
       "type": "tk-ritual-deck",
