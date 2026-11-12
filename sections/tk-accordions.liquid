@@ -1,0 +1,60 @@
+{%- style -%}
+.tk-acc-wrap details{border-top:1.5px solid rgba(23,19,16,.18);padding:18px 0}
+.tk-acc-wrap details:last-of-type{border-bottom:1.5px solid rgba(23,19,16,.18)}
+.tk-acc-wrap summary{cursor:pointer;list-style:none;display:flex;justify-content:space-between;align-items:center;gap:16px;min-height:44px}
+.tk-acc-wrap summary::-webkit-details-marker{display:none}
+.tk-acc-wrap summary::after{content:'+';font-weight:400;font-size:24px;line-height:1}
+.tk-acc-wrap details[open] summary::after{content:'–'}
+.tk-acc-pd summary{font:900 15px var(--tk-f-sans);font-stretch:125%;text-transform:uppercase}
+.tk-acc-pd .tk-acc-body{font-size:15px;line-height:1.55;margin:10px 0 0}
+.tk-acc-faq summary{font-weight:700;font-size:18px}
+.tk-acc-faq .tk-acc-body{margin:14px 0 0;line-height:1.6}
+.tk-acc-body p{margin:0 0 .6em}.tk-acc-body p:last-child{margin:0}
+{%- endstyle -%}
+{%- liquid
+  assign faq = false
+  if section.settings.style == 'faq'
+    assign faq = true
+  endif
+-%}
+<section
+  {% if faq %}aria-labelledby="faq-h-{{ section.id }}" class="tk-acc-wrap tk-acc-faq" style="max-width: 860px; margin: 0 auto; padding: 96px 24px"{% else %}aria-label="{{ section.settings.heading | default: 'Details' | escape }}" class="tk-acc-wrap tk-acc-pd" style="padding: 32px 20px 56px; max-width: 520px; margin: 0 auto"{% endif %}
+>
+    {%- if faq -%}
+      <h2 id="faq-h-{{ section.id }}" class="wide" style="margin: 0 0 32px; font-size: clamp(30px, 3.8vw, 48px)">{{ section.settings.heading }}</h2>
+    {%- endif -%}
+    {%- for block in section.blocks -%}
+      <details {{ block.shopify_attributes }}>
+        <summary>{{ block.settings.title }}</summary>
+        <div class="tk-acc-body">
+          {{ block.settings.body }}
+          {%- if block.settings.link_label != blank and block.settings.link != blank -%}
+            <p><a href="{{ block.settings.link }}" rel="noopener" target="_blank" style="font-weight: 700">{{ block.settings.link_label }}</a></p>
+          {%- endif -%}
+        </div>
+      </details>
+    {%- endfor -%}
+  </section>
+
+{% schema %}
+{
+  "name": "TEKILA accordions",
+  "settings": [
+    { "type": "select", "id": "style", "label": "Style", "options": [ { "value": "pdp", "label": "Product page" }, { "value": "faq", "label": "Homepage FAQ" } ], "default": "pdp" },
+    { "type": "text", "id": "heading", "label": "Heading (FAQ style)", "default": "Questions" }
+  ],
+  "blocks": [
+    {
+      "type": "item",
+      "name": "Item",
+      "settings": [
+        { "type": "text", "id": "title", "label": "Title" },
+        { "type": "richtext", "id": "body", "label": "Answer" },
+        { "type": "text", "id": "link_label", "label": "Link label" },
+        { "type": "url", "id": "link", "label": "Link (e.g. WhatsApp)" }
+      ]
+    }
+  ],
+  "presets": [{ "name": "TEKILA accordions" }]
+}
+{% endschema %}

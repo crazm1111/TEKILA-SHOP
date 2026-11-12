@@ -1,0 +1,118 @@
+{%- style -%}
+.rs-wide{font-stretch:125%;font-weight:900;text-transform:uppercase;letter-spacing:-0.01em}
+.rs-serif{font-family:var(--tk-f-serif);font-weight:400;font-style:italic}
+.rs-polaroid{position:relative;width:min(290px,78vw);margin:8px auto 0;background:#FFFDF8;padding:12px 12px 74px;box-shadow:0 22px 44px rgba(23,19,16,.22),0 2px 6px rgba(23,19,16,.12);transform:rotate(-2deg);transition:transform .45s cubic-bezier(.3,1.3,.5,1)}
+.rs-tilt-b{transform:rotate(1.6deg)}
+.rs-screen{position:relative;aspect-ratio:9/16;background:#171310;overflow:hidden}
+.rs-screen video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block}
+.rs-bars{position:absolute;left:8px;right:8px;top:8px;z-index:3;display:grid;grid-auto-flow:column;grid-auto-columns:minmax(0,1fr);gap:4px}
+.rs-bar{height:3px;border-radius:2px;background:rgba(244,234,218,.35);overflow:hidden}
+.rs-bar i{display:block;height:100%;width:0;background:#F4EADA}
+.rs-zone{position:absolute;top:0;bottom:0;z-index:2;border:0;background:transparent;cursor:pointer;padding:0}
+.rs-prev{left:0;width:35%}
+.rs-next{right:0;width:65%}
+.rs-sound{position:absolute;right:10px;top:20px;z-index:4;width:44px;height:44px;border-radius:50%;border:0;background:rgba(14,11,9,.55);color:#F4EADA;cursor:pointer;display:grid;place-items:center}
+.rs-sound .tk-i-on{display:none}.rs-sound[aria-pressed="true"] .tk-i-on{display:block}.rs-sound[aria-pressed="true"] .tk-i-off{display:none}
+.rs-hint{position:absolute;left:50%;bottom:14px;z-index:3;transform:translateX(-50%);white-space:nowrap;background:rgba(14,11,9,.6);color:#F4EADA;border-radius:999px;padding:6px 12px;font:600 11px var(--tk-f-mono);pointer-events:none}
+.rs-cap{position:absolute;left:14px;right:14px;bottom:0;height:74px;display:flex;align-items:center;justify-content:center;text-align:center}
+.rs-hand{font-family:var(--tk-f-serif);font-style:italic;font-size:22px;line-height:1.1;color:#171310;animation:rsIn .45s ease both}
+.rs-hand2{animation-name:rsIn2}
+@keyframes rsIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+@keyframes rsIn2{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+{%- endstyle -%}
+<section aria-labelledby="rs-h-{{ section.id }}" style="background: #F4EADA; color: #171310; padding: 64px 20px 72px; overflow: hidden">
+  <div style="max-width: 480px; margin: 0 auto; display: flex; flex-direction: column; gap: 22px">
+    <h2 id="rs-h-{{ section.id }}" style="margin: 0; display: flex; flex-direction: column; gap: 2px">
+      <span class="rs-wide" style="font-size: 54px; line-height: .9">{{ section.settings.heading_a }}</span>
+      <span class="rs-serif" style="font-size: 40px; line-height: 1; color: #B3202B">{{ section.settings.heading_b }}</span>
+    </h2>
+    <p style="margin: 0; font-size: 16px; line-height: 1.5; opacity: .8">{{ section.settings.subline }}</p>
+
+    <tk-reviews>
+      <script type="application/json">[
+        {%- for block in section.blocks -%}
+          { "src": {% capture s %}{% render 'tk-src', f: block.settings.video %}{% endcapture %}{{ s | strip | json }},
+            "poster": {% capture p %}{% render 'tk-src', f: block.settings.poster, w: 600 %}{% endcapture %}{{ p | strip | json }},
+            "quote": {{ block.settings.quote | json }} }{% unless forloop.last %},{% endunless %}
+        {%- endfor -%}
+      ]</script>
+      {%- assign first = section.blocks.first -%}
+      <div class="rs-polaroid" data-pol>
+        <div class="rs-screen">
+          <video playsinline muted preload="none" data-tk-loop data-tk-hold
+            {% if first %}data-src="{%- render 'tk-src', f: first.settings.video -%}" poster="{%- render 'tk-src', f: first.settings.poster, w: 600 -%}"{% endif %}
+            aria-label="Review video"></video>
+          <div class="rs-bars" aria-hidden="true">{%- for block in section.blocks -%}<span class="rs-bar"><i></i></span>{%- endfor -%}</div>
+          <button type="button" class="rs-zone rs-prev" data-prev aria-label="Previous stranger"></button>
+          <button type="button" class="rs-zone rs-next" data-next aria-label="Next stranger"></button>
+          <button type="button" class="rs-sound" data-snd aria-pressed="false" aria-label="Turn sound on">
+            <svg class="tk-i-off" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 5 6 9H2v6h4l5 4z"></path><path d="m23 9-6 6"></path><path d="m17 9 6 6"></path></svg>
+            <svg class="tk-i-on" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 5 6 9H2v6h4l5 4z"></path><path d="M15.5 8.5a5 5 0 0 1 0 7"></path></svg>
+          </button>
+          <span class="rs-hint" data-hint>Tap the speaker for sound</span>
+        </div>
+        <div class="rs-cap"><span class="rs-hand" data-quote aria-live="polite">{% if first %}“{{ first.settings.quote }}”{% endif %}</span></div>
+      </div>
+    </tk-reviews>
+  </div>
+</section>
+<script>
+  if (!customElements.get('tk-reviews')) customElements.define('tk-reviews', class extends HTMLElement {
+    connectedCallback() {
+      var d = []; try { d = JSON.parse(this.querySelector('script').textContent); } catch (e) {}
+      if (!d.length) return;
+      var v = this.querySelector('video'), pol = this.querySelector('[data-pol]'), q = this.querySelector('[data-quote]'),
+          bars = this.querySelectorAll('.rs-bar i'), snd = this.querySelector('[data-snd]'), hint = this.querySelector('[data-hint]');
+      var i = 0, N = d.length, seen = false;
+      var syncSnd = function () { var on = !v.muted; snd.setAttribute('aria-pressed', on ? 'true' : 'false'); snd.setAttribute('aria-label', on ? 'Mute' : 'Turn sound on'); hint.hidden = on; };
+      var go = function (n, play) {
+        i = (n + N) % N; var cur = d[i];
+        v.dataset.src = cur.src; v.src = cur.src; v.poster = cur.poster;
+        pol.className = 'rs-polaroid' + (i % 2 ? ' rs-tilt-b' : '');
+        q.className = 'rs-hand' + (i % 2 ? ' rs-hand2' : ''); q.textContent = '“' + cur.quote + '”';
+        bars.forEach(function (b, k) { b.style.width = (k < i ? 100 : 0) + '%'; });
+        if (play !== false) window.TK ? TK.play(v) : v.play();
+      };
+      if ('IntersectionObserver' in window) new IntersectionObserver(function (es) {
+        es.forEach(function (e) {
+          if (e.isIntersecting) { if (!seen) { seen = true; go(0, !(window.TK && TK.reduced())); } else if (window.TK && !TK.reduced()) TK.play(v); }
+          else if (!v.paused) v.pause();
+        });
+      }, { threshold: .35 }).observe(v);
+      v.addEventListener('timeupdate', function () { if (v.duration && bars[i]) bars[i].style.width = Math.round(v.currentTime / v.duration * 100) + '%'; });
+      v.addEventListener('ended', function () { go(i + 1); });
+      this.querySelector('[data-prev]').addEventListener('click', function () { go(i - 1); });
+      this.querySelector('[data-next]').addEventListener('click', function () { go(i + 1); });
+      snd.addEventListener('click', function () {
+        var on = v.muted;
+        if (on && window.TK) { TK.claimSound(v); if (TK.muted) TK.setMuted(false); }
+        v.muted = !on; syncSnd(); window.TK ? TK.play(v) : v.play();
+      });
+      document.addEventListener('tk:sound', function (e) { if (e.detail.owner !== v) { v.muted = true; syncSnd(); } });
+      document.addEventListener('tk:mute', function () { syncSnd(); });
+    }
+  });
+</script>
+
+{% schema %}
+{
+  "name": "TEKILA reviews",
+  "settings": [
+    { "type": "text", "id": "heading_a", "label": "Heading, wide", "default": "They did" },
+    { "type": "text", "id": "heading_b", "label": "Heading, serif", "default": "the scary thing." },
+    { "type": "textarea", "id": "subline", "label": "Subline", "default": "Reviews filmed inside our strangers gatherings. No friends, no plus-ones. Just strangers and TEKILA." }
+  ],
+  "blocks": [
+    {
+      "type": "review",
+      "name": "Review",
+      "settings": [
+        { "type": "text", "id": "video", "label": "Video (file name or URL)" },
+        { "type": "text", "id": "poster", "label": "Poster (file name or URL)" },
+        { "type": "text", "id": "quote", "label": "Quote on the photo" }
+      ]
+    }
+  ],
+  "presets": [{ "name": "TEKILA reviews" }]
+}
+{% endschema %}

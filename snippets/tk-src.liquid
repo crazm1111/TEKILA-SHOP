@@ -1,0 +1,22 @@
+{%- comment -%}
+  Resolves a media reference to a URL.
+  - A full URL (has "//") is used as is.
+  - Otherwise it is a file name in Content → Files, e.g. "hero-tekilaaa.mp4".
+  Images get a width when one is passed.
+  Usage: {%- render 'tk-src', f: 'img-1.jpg', w: 900 -%}
+{%- endcomment -%}
+{%- liquid
+  assign ext = f | split: '.' | last | downcase
+  assign is_img = false
+  if ext == 'jpg' or ext == 'jpeg' or ext == 'png' or ext == 'webp'
+    assign is_img = true
+  endif
+  if f contains '//'
+    echo f
+  elsif is_img and w
+    assign size = w | append: 'x'
+    echo f | file_img_url: size
+  else
+    echo f | file_url
+  endif
+-%}

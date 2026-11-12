@@ -1,0 +1,106 @@
+{%- style -%}
+.intro{position:relative;overflow:hidden;max-height:2400px;transition:max-height .9s cubic-bezier(.7,0,.2,1),opacity .6s ease}
+.intro-out{max-height:0;opacity:0}
+.intro .stage{position:relative;height:100vh;height:100svh;min-height:620px;background:#D8C3A0;overflow:hidden;display:flex;flex-direction:column;align-items:center}
+.intro .bottle{position:absolute;left:50%;bottom:0;width:clamp(230px,min(30vw,38vh),380px);transform:translate(-50%,48%);animation:peek 1.1s .2s cubic-bezier(.2,.8,.2,1) both}
+@keyframes peek{from{transform:translate(-50%,85%)}to{transform:translate(-50%,48%)}}
+.intro .bottle .tk-bottle{display:block;position:relative}
+.intro .bottle-act{position:relative;z-index:1}
+.intro .bottle-body{position:relative;z-index:2}
+.press-a{animation:pressA .32s cubic-bezier(.3,0,.3,1)}
+.press-b{animation:pressB .32s cubic-bezier(.3,0,.3,1)}
+@keyframes pressA{0%,100%{transform:translateY(0)}40%{transform:translateY(30%)}}
+@keyframes pressB{0%,100%{transform:translateY(0)}40%{transform:translateY(30%)}}
+.nozzle{position:absolute;left:50%;top:0;width:96px;height:96px;margin:-28px 0 0 -48px;border-radius:50%;border:0;background:transparent;cursor:pointer;z-index:4}
+.nozzle::before{content:'';position:absolute;inset:14px;border-radius:50%;border:2px solid #B3202B;animation:ring 1.6s ease-out infinite}
+@keyframes ring{0%{transform:scale(.4);opacity:1}100%{transform:scale(1.25);opacity:0}}
+.puff{position:absolute;left:48.5%;top:3%;width:26px;height:26px;margin:-13px 0 0 -13px;border-radius:50%;background:radial-gradient(circle,rgba(233,169,60,.6),rgba(233,169,60,0) 70%);pointer-events:none;z-index:3;animation:puff 1.4s ease-out forwards}
+@keyframes puff{0%{transform:translate(0,0) scale(.3);opacity:1}100%{transform:translate(var(--dx),var(--dy)) scale(var(--s));opacity:0}}
+.dot{width:14px;height:14px;border-radius:50%;border:2px solid #171310;transition:background .2s}
+.dot-on{background:#B3202B;border-color:#B3202B}
+.intro-skip{position:absolute;right:20px;bottom:20px;z-index:6;background:rgba(244,234,218,.85);border:0;border-radius:999px;padding:12px 18px;min-height:44px;font:600 14px var(--tk-f-sans);cursor:pointer;color:#171310}
+{%- endstyle -%}
+<tk-intro{% if request.design_mode %} data-editor{% endif %}>
+  <section class="intro" aria-label="The ritual: press the nozzle three times to enter" data-intro>
+    <div class="stage">
+      <div style="position: relative; z-index: 5; width: 100%; max-width: 1200px; padding: clamp(40px, 8vh, 88px) 24px 0; display: flex; flex-direction: column; align-items: center; gap: 18px; text-align: center">
+        <h1 class="wide" style="margin: 0; font-size: clamp(44px, min(9vw, 10vh), 140px); line-height: .88">{{ section.settings.heading_a }}<br><span class="serif-i" style="color: #B3202B">{{ section.settings.heading_b }}</span></h1>
+        <p style="margin: 0; font-size: clamp(16px, 1.6vw, 20px); line-height: 1.5">{{ section.settings.text }}</p>
+        <div style="display: flex; gap: 10px; align-items: center" aria-live="polite">
+          <span class="dot"></span><span class="dot"></span><span class="dot"></span>
+          <span class="mono" style="font-size: 13px; margin-left: 6px"><span data-n>0</span> / 3</span>
+        </div>
+      </div>
+      <div class="bottle" data-bottle>
+        <button type="button" class="nozzle" aria-label="Press the nozzle"></button>
+        {%- render 'tk-bottle', act_cls: 'bottle-act', body_cls: 'bottle-body', alt: 'TEKILA Anxiety bottle', w: 800 -%}
+      </div>
+      <button type="button" class="intro-skip" data-skip>Skip</button>
+    </div>
+  </section>
+</tk-intro>
+<script>
+  (function () {
+    var el = document.currentScript.previousElementSibling;
+    var seen = false; try { seen = !!localStorage.getItem('tk-intro-seen'); } catch (e) {}
+    if (seen && !el.hasAttribute('data-editor')) { el.hidden = true; document.documentElement.classList.remove('tk-intro-on'); return; }
+    /* While the intro runs the page can't scroll: only the nozzle (3 presses) or Skip lets you in. */
+    var root = document.documentElement;
+    if (!root.classList.contains('tk-intro-on')) return;
+    try { history.scrollRestoration = 'manual'; } catch (e) {}
+    window.scrollTo(0, 0);
+    var locked = function () { return root.classList.contains('tk-intro-on'); };
+    var stop = function (e) { if (locked()) e.preventDefault(); };
+    var keys = { ' ': 1, PageDown: 1, PageUp: 1, ArrowDown: 1, ArrowUp: 1, Home: 1, End: 1 };
+    window.addEventListener('wheel', stop, { passive: false });
+    window.addEventListener('touchmove', stop, { passive: false });
+    window.addEventListener('keydown', function (e) { if (locked() && keys[e.key] && !(e.target.closest && e.target.closest('button'))) e.preventDefault(); });
+    window.addEventListener('scroll', function () { if (locked() && window.scrollY) window.scrollTo(0, 0); }, { passive: true });
+  })();
+  if (!customElements.get('tk-intro')) customElements.define('tk-intro', class extends HTMLElement {
+    connectedCallback() {
+      if (this.hidden) return;
+      var self = this, n = 0, done = false, act = this.querySelector('.bottle-act'), bottle = this.querySelector('[data-bottle]'),
+          dots = this.querySelectorAll('.dot'), out = this.querySelector('[data-n]'), sec = this.querySelector('[data-intro]');
+      var reveal = function () {
+        if (done) return; done = true;
+        try { localStorage.setItem('tk-intro-seen', '1'); } catch (e) {}
+        sec.classList.add('intro-out');
+        document.documentElement.classList.remove('tk-intro-on');
+        document.dispatchEvent(new CustomEvent('tk:intro-done'));
+        setTimeout(function () { self.hidden = true; var m = document.getElementById('MainContent'); if (m) m.focus({ preventScroll: true }); }, 950);
+      };
+      this.querySelector('.nozzle').addEventListener('click', function () {
+        if (done) return;
+        if (window.TK) TK.psst();
+        n++; out.textContent = n;
+        dots.forEach(function (d, i) { d.classList.toggle('dot-on', i < n); });
+        act.classList.remove('press-a', 'press-b'); void act.offsetWidth; act.classList.add(n % 2 ? 'press-a' : 'press-b');
+        if (!(window.TK && TK.reduced())) {
+          for (var i = 0; i < 18; i++) {
+            var a = (-165 + Math.random() * 150) * Math.PI / 180, r = 80 + Math.random() * 220, p = document.createElement('span');
+            p.className = 'puff';
+            p.style.cssText = '--dx:' + Math.round(Math.cos(a) * r) + 'px;--dy:' + Math.round(Math.sin(a) * r) + 'px;--s:' + (2 + Math.random() * 5).toFixed(1) + ';animation-delay:' + (0.08 + Math.random() * 0.12).toFixed(2) + 's';
+            p.addEventListener('animationend', function () { this.remove(); });
+            bottle.appendChild(p);
+          }
+        }
+        if (n >= 3) setTimeout(reveal, 650);
+      });
+      this.querySelector('[data-skip]').addEventListener('click', function () { if (window.TK) TK.audio(); reveal(); });
+    }
+  });
+</script>
+
+{% schema %}
+{
+  "name": "TEKILA intro",
+  "settings": [
+    { "type": "paragraph", "content": "Shows on a visitor's first visit only. Press the nozzle three times (or Skip) to enter." },
+    { "type": "text", "id": "heading_a", "label": "Heading", "default": "Three sprays." },
+    { "type": "text", "id": "heading_b", "label": "Heading, serif", "default": "Then you go." },
+    { "type": "text", "id": "text", "label": "Text", "default": "Press the nozzle three times to enter." }
+  ],
+  "presets": [{ "name": "TEKILA intro" }]
+}
+{% endschema %}

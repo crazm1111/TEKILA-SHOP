@@ -1,0 +1,199 @@
+{{ 'tk-product.css' | asset_url | stylesheet_tag }}
+<script src="{{ 'tk-product.js' | asset_url }}" defer></script>
+{%- liquid
+  assign ritual = null
+  assign passport = null
+  for v in product.variants
+    assign t = v.title | downcase
+    if t contains 'passport'
+      assign passport = v
+    elsif t contains 'ritual'
+      assign ritual = v
+    endif
+  endfor
+  if ritual == null
+    assign ritual = product.variants.first
+  endif
+  assign taken = product.metafields.tekila.taken_numbers.value
+  assign taken_count = 0
+  for n in taken
+    if n >= 101 and n <= 200
+      assign taken_count = taken_count | plus: 1
+    endif
+  endfor
+  assign left = 100 | minus: taken_count
+  assign check = '<path d="M5 12.5l4.5 4.5L19 7.5"></path>'
+-%}
+
+<tk-pdp
+  data-section="{{ section.id }}"
+  data-worker="{{ section.settings.worker_url | escape }}"
+  data-checkout="{{ section.settings.go_to_checkout }}"
+>
+  <script type="application/json" data-pdp>
+    {
+      "ritual": {% if ritual %}{ "id": {{ ritual.id }}, "price": {{ ritual.price }}, "available": {{ ritual.available }} }{% else %}null{% endif %},
+      "passport": {% if passport %}{ "id": {{ passport.id }}, "price": {{ passport.price }}, "available": {{ passport.available }} }{% else %}null{% endif %},
+      "taken": {% if taken %}{{ taken | json }}{% else %}[]{% endif %}
+    }
+  </script>
+
+  {%- comment -%} 1. Gallery: Shopify product media, splash video first {%- endcomment -%}
+  {%- assign media_count = product.media.size -%}
+  {%- if media_count > 0 -%}
+    <div class="pd-gal" data-gal aria-roledescription="carousel" aria-label="Product photos">
+      {%- for m in product.media -%}
+        <div class="pd-slide" {% if forloop.first %}data-on{% endif %} aria-hidden="{% unless forloop.first %}true{% else %}false{% endunless %}" role="group" aria-roledescription="slide" aria-label="{{ forloop.index }} of {{ media_count }}">
+          {%- case m.media_type -%}
+            {%- when 'video' -%}
+              <video muted playsinline loop preload="{% if forloop.first %}metadata{% else %}none{% endif %}" data-tk-loop poster="{{ m.preview_image | image_url: width: 900 }}" aria-label="{{ m.alt | escape }}" data-src="{{ m.sources | where: 'format', 'mp4' | map: 'url' | first | default: m.sources.first.url }}"></video>
+            {%- when 'external_video' -%}
+              {{ m | external_video_tag: loading: 'lazy' }}
+            {%- else -%}
+              {{ m.preview_image | image_url: width: 1100 | image_tag: loading: 'lazy', widths: '480, 720, 900, 1100', sizes: '(min-width: 640px) 640px, 100vw', alt: m.alt }}
+          {%- endcase -%}
+        </div>
+      {%- endfor -%}
+      <span class="pd-count" aria-live="polite"><span data-gal-n>1</span> / {{ media_count }}</span>
+      <button type="button" class="pd-arrow" style="left: 0" data-gal-prev aria-label="Previous photo"></button>
+      <button type="button" class="pd-arrow" style="right: 0" data-gal-next aria-label="Next photo"></button>
+    </div>
+    <div class="pd-thumbs">
+      {%- for m in product.media -%}
+        <button type="button" class="pd-th" data-gal-thumb="{{ forloop.index0 }}" aria-label="Show item {{ forloop.index }}" aria-current="{% if forloop.first %}true{% else %}false{% endif %}">
+          {{ m.preview_image | image_url: width: 120 | image_tag: loading: 'lazy', alt: '' }}
+          {%- if m.media_type == 'video' or m.media_type == 'external_video' -%}
+            <span class="pd-th-play" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M7 4.5v15l13-7.5z"/></svg></span>
+          {%- endif -%}
+        </button>
+      {%- endfor -%}
+    </div>
+  {%- endif -%}
+
+  <div class="pd-main">
+    {%- comment -%} 2. Title {%- endcomment -%}
+    <h1 style="margin: 0; display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap"><span class="pd-wide" style="font-size: 40px; line-height: .9">{{ section.settings.title_a }}</span><span class="pd-serif" style="font-size: 38px; line-height: .9; color: #B3202B">{{ section.settings.title_b }}</span></h1>
+
+    {%- comment -%} 3. What it is {%- endcomment -%}
+    <section class="pd-desc" aria-label="What it is">
+      <p class="pd-mono" style="margin: 0; font-size: 11px; letter-spacing: .14em; color: #E9A93C">WHAT IT IS</p>
+      <p style="margin: -8px 0 0; font-size: 21px; line-height: 1.35; font-weight: 600">{{ section.settings.what_it_is }}</p>
+      <div class="pd-facts">
+        <div class="pd-fact"><b>50 ml</b><span>perfume</span></div>
+        <div class="pd-fact"><b>10+ hrs</b><span>on your skin</span></div>
+        <div class="pd-fact"><b>Close</b><span>only you can smell it</span></div>
+      </div>
+      <p class="pd-steps" style="margin: 0">Splash <i>→</i> Breathe <i>→</i> Go</p>
+    </section>
+
+    {%- comment -%} 4. Price + delivery {%- endcomment -%}
+    <div style="display: flex; flex-direction: column; gap: 10px">
+      <div style="display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap">
+        <span class="pd-wide" style="font-size: 36px; line-height: 1" data-price aria-live="polite">From {% render 'tk-price', cents: ritual.price %}</span>
+        <span class="pd-mono" style="font-size: 13px; opacity: .55; text-decoration: line-through" data-show="passport" hidden>{{ section.settings.future_price }}</span>
+      </div>
+      <div class="pd-ship"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 7h11v9H3z"></path><path d="M14 10h4l3 3v3h-7z"></path><circle cx="7" cy="17.5" r="1.8"></circle><circle cx="17.5" cy="17.5" r="1.8"></circle></svg><span><strong>Free delivery</strong> · order now, it arrives <strong><tk-time format="arrive">in about 10 days</tk-time></strong></span></div>
+    </div>
+
+    {%- comment -%} 5. Choose how you come in: Ritual first, Passport second, nothing pre-selected {%- endcomment -%}
+    <div style="display: flex; flex-direction: column; gap: 12px" role="radiogroup" aria-labelledby="pd-choose-{{ section.id }}">
+      <p class="pd-wide" id="pd-choose-{{ section.id }}" style="margin: 0; font-size: 22px">Choose how you come in</p>
+
+      <button type="button" role="radio" aria-checked="false" class="pd-card" data-plan="ritual"{% unless ritual.available %} aria-disabled="true"{% endunless %}>
+        <span class="pd-float" aria-hidden="true">
+          {%- render 'tk-bottle', cls: 'pf pf-bottle', style: 'left: 38%; top: 6px', w: 120 -%}
+          <span class="pf pf-letter" style="left: 56%; top: 42px; --r: 8deg; animation-delay: .6s"><i>T</i></span>
+        </span>
+        <span class="pd-radio" aria-hidden="true"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round">{{ check }}</svg></span>
+        <span style="display: flex; flex-direction: column; gap: 6px"><span class="pd-wide" style="font-size: 28px; line-height: 1">The Ritual</span><span class="pd-mono" style="font-size: 16px; font-weight: 600">{% render 'tk-price', cents: ritual.price %}</span></span>
+        <span class="pd-perk"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#171310" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">{{ check }}</svg><span>Tekila Anxiety, 50 ml</span></span>
+        <span class="pd-perk"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#171310" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">{{ check }}</svg><span>A stranger’s sealed letter</span></span>
+        <span class="pd-perk pd-no"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#171310" stroke-width="2.5" stroke-linecap="round" aria-hidden="true"><path d="M6 12h12"></path></svg><span>No gatherings, no community, no passport</span></span>
+        <span class="pd-upgrade pd-fade" data-show="ritual" hidden>{{ section.settings.upgrade_note }}</span>
+      </button>
+
+      {%- if passport -%}
+      <button type="button" role="radio" aria-checked="false" class="pd-card" data-plan="passport"{% unless passport.available %} aria-disabled="true"{% endunless %}>
+        <span class="pd-float pd-float-big" aria-hidden="true">
+          <span class="pf pf-card" style="left: 2%; top: 30px; --r: -10deg; animation-delay: .3s"><small>INVITACIÓN</small>Gatherings</span>
+          <span class="pf pf-contract" style="left: 22%; top: 4px; --r: -6deg; animation-delay: .9s"><small>CONTRATO</small><b></b><b></b><b style="width: 60%"></b><b></b></span>
+          {%- render 'tk-bottle', cls: 'pf pf-bottle', style: 'left: 43%; top: 0', w: 120 -%}
+          <span class="pf pf-pass" style="left: 61%; top: 22px; --r: 9deg; animation-delay: .5s"><small>PASAPORTE</small><em>Nº 1__</em></span>
+          <span class="pf pf-letter" style="left: 78%; top: 60px; --r: 12deg; animation-delay: 1.2s"><i>T</i></span>
+        </span>
+        <span class="pd-radio" aria-hidden="true"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round">{{ check }}</svg></span>
+        <span class="pd-badge">EMBAJADORES</span>
+        <span style="display: flex; flex-direction: column; gap: 6px"><span class="pd-wide" style="font-size: 28px; line-height: 1">The Passport</span><span class="pd-mono" style="font-size: 16px; font-weight: 600">{% if passport.available %}{% render 'tk-price', cents: passport.price %}{% else %}Sold out{% endif %}</span></span>
+        <span class="pd-gperk"><span class="pd-perk" style="flex: 1"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#B3202B" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">{{ check }}</svg><span><span class="pd-hl">A seat at our monthly gatherings</span><span style="display: block; font-size: 13px; opacity: .7; margin-top: 4px">Watch one just below ↓</span></span></span></span>
+        <span class="pd-perk"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#B3202B" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">{{ check }}</svg><span>The TEKILA community on WhatsApp</span></span>
+        <span class="pd-perk"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#B3202B" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">{{ check }}</svg><span>Your numbered passport, with your name on it</span></span>
+        <span class="pd-perk"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#B3202B" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">{{ check }}</svg><span>Member prices and first access to new rituals</span></span>
+        <span class="pd-perk"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#B3202B" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">{{ check }}</svg><span>Tekila Anxiety, 50 ml</span></span>
+        <span class="pd-perk"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#B3202B" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">{{ check }}</svg><span>A stranger’s sealed letter</span></span>
+      </button>
+      {%- endif -%}
+    </div>
+
+    {%- comment -%} 6. Make it yours (Passport only) {%- endcomment -%}
+    {%- if passport -%}
+    <div class="pd-fade" data-show="passport" hidden style="display: flex; flex-direction: column; gap: 18px">
+      <p class="pd-wide" style="margin: 0; font-size: 22px">Make it yours</p>
+      <div style="display: flex; flex-direction: column; gap: 10px">
+        <div style="display: flex; justify-content: space-between; align-items: baseline">
+          <span class="pd-label" id="pd-num-{{ section.id }}">1 · Choose your number</span>
+          <span class="pd-pill"><span data-left>{{ left }}</span> of 100 left</span>
+        </div>
+        <div class="pd-scroll" role="group" aria-labelledby="pd-num-{{ section.id }}">
+          <div class="pd-grid">
+            {%- for n in (101..200) -%}
+              {%- assign is_taken = false -%}
+              {%- if taken contains n -%}{%- assign is_taken = true -%}{%- endif -%}
+              <button type="button" class="tkp" data-no="{{ n }}" aria-pressed="false"{% if is_taken %} disabled aria-label="Passport {{ n }}, taken"{% else %} aria-label="Passport {{ n }}, open"{% endif %}>{{ n }}</button>
+            {%- endfor -%}
+          </div>
+        </div>
+      </div>
+      <label style="display: flex; flex-direction: column; gap: 8px">
+        <span class="pd-label">2 · Your name on the passport</span>
+        <input class="pd-field" type="text" maxlength="24" placeholder="Your name" autocomplete="given-name" data-name>
+      </label>
+      <div class="pd-cert" role="img" aria-label="Your TEKILA certificate" data-cert style="background-image: url('{%- render 'tk-src', f: section.settings.certificate, w: 900 -%}')">
+        <span class="pd-cname" data-cname data-empty>Your name</span>
+        <span class="pd-cstamp pd-slam" data-cstamp hidden>EMBAJADOR<b>Nº <span data-cno></span></b></span>
+      </div>
+    </div>
+    {%- endif -%}
+
+    {%- comment -%} 7. Timer C + Reserve {%- endcomment -%}
+    <div style="display: flex; flex-direction: column; gap: 12px">
+      <div class="tc" role="timer" data-clock aria-label="This week’s batch">
+        <p class="pd-wide" style="margin: 0; font-size: 16px">This week’s batch</p>
+        <div class="tc-week" aria-hidden="true" data-week>
+          {%- for i in (1..7) -%}<span class="tc-day"><span></span><b></b></span>{%- endfor -%}
+        </div>
+        <div class="tc-row">
+          <span style="display: flex; flex-direction: column"><span class="pd-mono" style="font-size: 11px; letter-spacing: .1em; opacity: .6">CLOSES THURSDAY 11:59 PM</span><span class="pd-wide" style="font-size: 24px; color: #B3202B"><tk-time format="clock">Thursday</tk-time></span></span>
+          <span style="text-align: right; display: flex; flex-direction: column"><span class="pd-mono" style="font-size: 11px; letter-spacing: .1em; opacity: .6">ARRIVES</span><span class="pd-serif" style="font-size: 26px"><tk-time format="arrive">~10 days</tk-time></span></span>
+        </div>
+      </div>
+      <button type="button" class="pd-btn" data-cta aria-disabled="true">Choose the Ritual or the Passport</button>
+      <p class="pd-msg" data-msg role="status" aria-live="polite"></p>
+    </div>
+  </div>
+</tk-pdp>
+
+{% schema %}
+{
+  "name": "TEKILA product",
+  "settings": [
+    { "type": "text", "id": "title_a", "label": "Title, wide part", "default": "Tekila" },
+    { "type": "text", "id": "title_b", "label": "Title, serif part", "default": "Anxiety" },
+    { "type": "textarea", "id": "what_it_is", "label": "What it is", "default": "A perfume you splash on right before a heavy moment: a date, a presentation, a room full of strangers." },
+    { "type": "text", "id": "future_price", "label": "Passport future price (struck through)", "default": "2,900 EGP from 1 January 2027" },
+    { "type": "inline_richtext", "id": "upgrade_note", "label": "Ritual upgrade note", "default": "Not sure yet? Upgrade to the Passport for <strong>700 EGP</strong> anytime before 31 Dec." },
+    { "type": "text", "id": "certificate", "label": "Certificate image (file name in Content → Files, or URL)", "default": "passport-certificate.jpg" },
+    { "type": "text", "id": "worker_url", "label": "Cartas / passport worker URL", "info": "e.g. https://tekila-cartas.<account>.workers.dev. Leave empty to skip the live number check." },
+    { "type": "checkbox", "id": "go_to_checkout", "label": "Go straight to checkout after reserving", "default": true }
+  ]
+}
+{% endschema %}

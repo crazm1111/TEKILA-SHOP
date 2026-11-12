@@ -1,0 +1,120 @@
+{{ 'tk-cartas.css' | asset_url | stylesheet_tag }}
+<script src="{{ 'tk-cartas.js' | asset_url }}" defer></script>
+<section id="cartas" aria-labelledby="cj-h-{{ section.id }}" style="background: #D8C3A0">
+  <tk-cartas data-worker="{{ section.settings.worker_url | escape }}" data-shown="{{ section.settings.shown }}" style="display: block; padding: 48px 20px 56px; max-width: 520px; margin: 0 auto; position: relative">
+    <script type="application/json" data-voices>[
+      {%- for block in section.blocks -%}
+        { "number": {{ block.settings.number | default: forloop.index }}, "src": {% capture s %}{% render 'tk-src', f: block.settings.audio %}{% endcapture %}{{ s | strip | json }} }{% unless forloop.last %},{% endunless %}
+      {%- endfor -%}
+    ]</script>
+    <div class="cj-stage">
+      <h2 id="cj-h-{{ section.id }}" class="wide" style="margin: 0; font-size: 44px; line-height: .92">Write one. <span class="cj-serif" style="color: #B3202B; font-size: 1.12em">Open one.</span></h2>
+
+      <div class="scene" data-scene="bag">
+        <p style="margin: 0; font-size: 17px; line-height: 1.45" data-bagline>Strangers sealed their heaviest moment in here. Leave yours, open any one you like.</p>
+        <div class="seat" data-seat>
+          <span class="seat-tk">FREE<br>SEAT</span>
+          <p style="margin: 0; font-size: 15px; line-height: 1.35">{{ section.settings.seat_line }} <span class="gword">Gathering</span></p>
+        </div>
+        <div class="bag" role="group" aria-label="Bag of sealed letters. Tap one for a taste." data-bag>
+          <div class="peek" role="status" data-peek hidden>
+            <p class="mono" style="margin: 0 0 6px; font-size: 10px; letter-spacing: .12em; opacity: .6" data-peek-label></p>
+            <p class="cj-serif" style="margin: 0; font-size: 19px; line-height: 1.3" data-peek-text></p>
+            <div class="snip" aria-hidden="true" data-snip hidden><i></i></div>
+            <p class="mono" style="margin: 8px 0 0; font-size: 11px; color: #B3202B" data-peek-more></p>
+          </div>
+          <span class="hint" data-hint hidden>Tap any letter to open it</span>
+        </div>
+        <p class="toast" aria-live="polite" data-toast></p>
+        <button type="button" class="cj-btn" data-start>Write yours</button>
+      </div>
+
+      <div class="scene" style="position: relative" data-scene="write" hidden>
+        <div class="paper">
+          <p class="mono" style="margin: 0 0 4px; font-size: 11px; letter-spacing: .12em; color: #B3202B" data-prompt aria-hidden="true">WHAT WAS THE MOMENT?</p>
+          <label for="cj-letter-{{ section.id }}" class="cj-serif" style="display: block; font-size: 24px; line-height: 32px">Dear stranger,</label>
+          <textarea id="cj-letter-{{ section.id }}" class="ta" maxlength="2000" placeholder="The last time I felt it was…" aria-describedby="cj-count-{{ section.id }}" data-text></textarea>
+          <p id="cj-count-{{ section.id }}" class="mono" style="margin: 8px 0 0; font-size: 12px; text-align: right; opacity: .7" data-counter aria-live="polite">120 more characters to seal</p>
+        </div>
+        <button type="button" class="cj-btn" data-to-send disabled>Seal it</button>
+        <button type="button" class="link" data-back>Back to the bag</button>
+        <div class="sheet-wrap" data-sheet hidden>
+          <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="cj-wa-l-{{ section.id }}">
+            <label id="cj-wa-l-{{ section.id }}" for="cj-wa-{{ section.id }}" style="font-size: 18px; font-weight: 700">Your WhatsApp, so we can write back</label>
+            <input id="cj-wa-{{ section.id }}" class="field" type="tel" inputmode="tel" autocomplete="tel" placeholder="+20 10…" data-phone aria-invalid="false">
+            <label class="check"><input type="checkbox" data-private><span>Keep my letter private. Only the TEKILA team reads it.</span></label>
+            <p style="margin: 0; font-size: 12px; line-height: 1.45; opacity: .75">By sealing, you confirm you're 18 or older. We read every letter and remove names before any stranger sees it.</p>
+            <button type="button" class="cj-btn" data-seal disabled>Seal &amp; send</button>
+            <p class="toast" aria-live="polite" data-send-err></p>
+            <button type="button" class="link" data-close-send>Keep writing</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="scene" data-scene="sealing" hidden>
+        <div class="sealed-paper fold">
+          <p class="cj-serif" style="margin: 0 0 8px; font-size: 24px">Dear stranger,</p>
+          <div class="ghost-lines" aria-hidden="true"></div>
+          <div class="bigstamp" aria-hidden="true">
+            <span class="wide" style="font-size: 34px; line-height: 1">TEKILA</span>
+            <span class="mono" style="font-size: 12px; font-weight: 600; letter-spacing: .14em">CARTA Nº <span data-myno></span></span>
+          </div>
+        </div>
+        <p style="margin: 0; font-size: 16px; text-align: center" aria-live="polite">Sealed. It's going in the bag.</p>
+      </div>
+
+      <div class="scene" data-scene="open" hidden>
+        <div class="paper" data-open-paper>
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px">
+            <p class="mono" style="margin: 0; font-size: 11px; letter-spacing: .12em; opacity: .65" data-open-label></p>
+            <span style="display: inline-flex; align-items: center; gap: 8px"><span class="mono" style="font-size: 11px; opacity: .7" data-total></span><span class="wax" style="width: 26px; height: 26px">T</span></span>
+          </div>
+          <div style="display: flex; align-items: center; gap: 14px" data-voice-row hidden>
+            <button type="button" class="cj-play" data-play aria-label="Play the voice letter">
+              <svg data-i-play width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M7 4.5v15l13-7.5z"/></svg>
+              <svg data-i-pause hidden width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><rect x="6" y="5" width="4" height="14"/><rect x="14" y="5" width="4" height="14"/></svg>
+            </button>
+            <div class="wave" aria-hidden="true" data-wave>{%- for i in (1..18) -%}<i></i>{%- endfor -%}</div>
+          </div>
+          <p class="cj-serif" style="margin: 0; font-size: 20px; line-height: 30px; white-space: pre-line" data-open-text></p>
+        </div>
+        <div>
+          <div data-stamp-idle>
+            <button type="button" class="stamp-it" aria-expanded="false" data-stamp-open><span class="sb-ic" aria-hidden="true">T</span><span>Stamp it</span></button>
+            <p style="margin: 8px 0 0; font-size: 13px; opacity: .65; text-align: center">Let the writer know it reached you. Anonymous.</p>
+          </div>
+          <div class="pick" role="group" aria-label="Choose a stamp" data-stamp-pick hidden>
+            <p class="mono" style="margin: 0 0 4px; font-size: 11px; letter-spacing: .12em; opacity: .6">CHOOSE YOUR STAMP</p>
+          </div>
+          <div class="stamp-done" role="status" data-stamp-done hidden></div>
+        </div>
+        <div class="seat" data-mine-seat hidden><span class="seat-tk">Nº <span data-myno></span></span><p style="margin: 0; font-size: 14px; line-height: 1.4">Your letter is in the running for this month's seat at the <span class="gword">Gathering</span>. We'll message you on WhatsApp.</p></div>
+        <button type="button" class="link" data-back-bag>Back to the bag</button>
+      </div>
+    </div>
+    <video class="cj-hidden-media" playsinline preload="none" aria-hidden="true" tabindex="-1" data-audio></video>
+  </tk-cartas>
+</section>
+
+{% schema %}
+{
+  "name": "TEKILA cartas",
+  "settings": [
+    { "type": "text", "id": "worker_url", "label": "Cartas worker URL", "info": "e.g. https://tekila-cartas.<account>.workers.dev" },
+    { "type": "range", "id": "shown", "label": "Letters in the bag", "min": 6, "max": 36, "step": 1, "default": 20 },
+    { "type": "text", "id": "seat_line", "label": "Seat line", "default": "Best letter each month wins a seat at our next" },
+    { "type": "paragraph", "content": "Voice letters below are a fallback shown when the worker has none yet. Approved voice letters from the carta metaobjects replace them." }
+  ],
+  "blocks": [
+    {
+      "type": "voice",
+      "name": "Voice letter (fallback)",
+      "settings": [
+        { "type": "number", "id": "number", "label": "Letter number" },
+        { "type": "text", "id": "audio", "label": "Audio or video file (file name or URL)" }
+      ]
+    }
+  ],
+  "presets": [{ "name": "TEKILA cartas" }]
+}
+{% endschema %}

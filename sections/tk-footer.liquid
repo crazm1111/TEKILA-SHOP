@@ -1,0 +1,27 @@
+<footer class="tk-foot" id="tk-footer">
+  <div style="max-width: 1200px; margin: 0 auto; padding: 64px 24px 40px; display: flex; flex-direction: column; gap: 40px">
+    <p class="wide" style="margin: 0; font-size: clamp(64px, 14vw, 200px); line-height: .8">Tekila</p>
+    <div style="display: flex; flex-wrap: wrap; gap: 16px 40px; justify-content: space-between; font-size: 15px">
+      <div class="tk-foot-line">{{ section.settings.line }}</div>
+      <nav aria-label="Footer" style="display: flex; gap: 24px; flex-wrap: wrap">
+        {%- if section.settings.instagram != blank -%}<a href="{{ section.settings.instagram }}" rel="noopener" target="_blank">Instagram</a>{%- endif -%}
+        {%- if section.settings.tiktok != blank -%}<a href="{{ section.settings.tiktok }}" rel="noopener" target="_blank">TikTok</a>{%- endif -%}
+        {%- if section.settings.whatsapp != blank -%}<a href="{{ section.settings.whatsapp }}" rel="noopener" target="_blank">WhatsApp</a>{%- endif -%}
+        <a href="{{ section.settings.policies | default: '/policies/refund-policy' }}">Policies</a>
+      </nav>
+    </div>
+  </div>
+</footer>
+
+{% schema %}
+{
+  "name": "TEKILA footer",
+  "settings": [
+    { "type": "richtext", "id": "line", "label": "Line", "default": "<p>Window 2 opens in 2027 at 2,900 EGP.</p>" },
+    { "type": "url", "id": "instagram", "label": "Instagram URL" },
+    { "type": "url", "id": "tiktok", "label": "TikTok URL" },
+    { "type": "url", "id": "whatsapp", "label": "WhatsApp link (https://wa.me/20…)" },
+    { "type": "url", "id": "policies", "label": "Policies link" }
+  ]
+}
+{% endschema %}

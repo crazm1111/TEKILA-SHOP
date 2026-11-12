@@ -1,0 +1,101 @@
+/* TEKILA product page (ported from design/ProductPage.dc.html) */
+body.tk-tpl-product{background:var(--tk-cream)}
+.pd-wide{font-stretch:125%;font-weight:900;text-transform:uppercase;letter-spacing:-0.01em}
+.pd-serif{font-family:var(--tk-f-serif);font-weight:400;font-style:italic}
+.pd-mono{font-family:var(--tk-f-mono)}
+/* gallery */
+.pd-gal{position:relative;aspect-ratio:4/5;background:#171310;overflow:hidden;touch-action:pan-y;max-width:640px;margin:0 auto}
+.pd-slide{position:absolute;inset:0;transition:opacity .45s ease;opacity:0}
+.pd-slide[data-on]{opacity:1}
+.pd-slide img,.pd-slide video{width:100%;height:100%;object-fit:cover;display:block}
+.pd-count{position:absolute;right:14px;top:14px;z-index:2;background:rgba(14,11,9,.7);color:#F4EADA;border-radius:999px;padding:6px 10px;font:600 11px var(--tk-f-mono)}
+.pd-arrow{position:absolute;top:0;bottom:0;z-index:1;width:40%;border:0;background:transparent;cursor:pointer}
+.pd-thumbs{display:flex;gap:6px;overflow-x:auto;padding:8px 12px;background:#171310;scrollbar-width:none;justify-content:flex-start}
+.pd-thumbs::-webkit-scrollbar{display:none}
+.pd-th{flex:0 0 52px;height:64px;border-radius:8px;overflow:hidden;border:2px solid transparent;padding:0;cursor:pointer;opacity:.55;background:#000;position:relative}
+.pd-th img{width:100%;height:100%;object-fit:cover;display:block}
+.pd-th[aria-current="true"]{opacity:1;border-color:#E9A93C}
+.pd-th-play{position:absolute;inset:0;display:grid;place-items:center;color:#F4EADA}
+/* main column */
+.pd-main{padding:24px 20px 48px;max-width:520px;margin:0 auto;display:flex;flex-direction:column;gap:22px}
+/* description */
+.pd-desc{background:#171310;color:#F4EADA;border-radius:22px;padding:22px 20px;display:flex;flex-direction:column;gap:16px}
+.pd-facts{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.pd-fact{background:rgba(244,234,218,.08);border-radius:14px;padding:12px 8px;text-align:center;display:flex;flex-direction:column;gap:3px}
+.pd-fact b{font:900 20px var(--tk-f-sans);font-stretch:125%;color:#E9A93C}
+.pd-fact span{font-size:12px;line-height:1.25;opacity:.8}
+.pd-steps{display:flex;align-items:center;justify-content:center;gap:8px;font:900 13px var(--tk-f-sans);font-stretch:125%;text-transform:uppercase;letter-spacing:.04em}
+.pd-steps i{font-style:normal;opacity:.4}
+/* delivery */
+.pd-ship{display:flex;align-items:center;gap:10px;background:#E9A93C;color:#171310;border-radius:14px;padding:12px 14px;font-size:15px}
+/* choice cards */
+.pd-card{position:relative;width:100%;text-align:left;border-radius:22px;padding:20px;cursor:pointer;display:flex;flex-direction:column;gap:12px;transition:transform .2s,box-shadow .2s,border-color .2s;font:inherit;background:#FBF6EC;color:#171310;border:2.5px solid rgba(23,19,16,.18)}
+.pd-card[aria-checked="true"]{border-color:#B3202B;box-shadow:0 0 0 3px #B3202B}
+.pd-card[aria-disabled="true"]{opacity:.5;cursor:not-allowed}
+.pd-gperk{display:flex;gap:12px;align-items:center}
+.pd-radio{position:absolute;right:18px;top:18px;width:26px;height:26px;border-radius:50%;border:2px solid currentColor;display:grid;place-items:center;opacity:.8;color:transparent}
+.pd-card[aria-checked="true"] .pd-radio{background:#B3202B;border-color:#B3202B;opacity:1;color:#F4EADA}
+.pd-perk{display:flex;gap:10px;align-items:flex-start;font-size:15px;line-height:1.35}
+.pd-perk svg{flex:none;margin-top:2px}
+.pd-hl{background:#E9A93C;color:#171310;padding:0 4px;font-weight:800;box-decoration-break:clone;-webkit-box-decoration-break:clone}
+.pd-no{opacity:.45;text-decoration:line-through}
+.pd-badge{align-self:flex-start;border:1.5px solid #B3202B;color:#B3202B;border-radius:4px;padding:3px 8px;font:900 10px var(--tk-f-sans);font-stretch:125%;letter-spacing:.1em;transform:rotate(-3deg)}
+.pd-upgrade{font-size:14px;background:#E7D9BF;border-radius:12px;padding:10px 12px}
+/* floating items */
+.pd-float{position:relative;display:block;height:110px;margin:-6px -6px 0}
+.pd-float-big{height:130px}
+.pf{position:absolute;display:block;transform:rotate(var(--r,0deg));animation:pfBob 3.6s ease-in-out infinite}
+@keyframes pfBob{0%,100%{transform:translateY(0) rotate(var(--r,0deg))}50%{transform:translateY(-8px) rotate(var(--r,0deg))}}
+.pf-bottle{width:52px;filter:drop-shadow(0 10px 12px rgba(23,19,16,.25))}
+.pf-letter{width:72px;height:50px;border-radius:4px;background:#F4EADA;box-shadow:0 8px 16px rgba(23,19,16,.2);background-image:linear-gradient(160deg,transparent 49%,#E6D8BE 50%),linear-gradient(200deg,transparent 49%,#E6D8BE 50%);background-size:50% 62%;background-position:left top,right top;background-repeat:no-repeat}
+.pf-letter i{position:absolute;left:50%;top:18px;margin-left:-11px;width:22px;height:22px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#D7333E,#9E1A24 70%);color:#F4EADA;font:900 11px var(--tk-f-sans);font-style:normal;display:grid;place-items:center}
+.pf-pass{width:58px;height:78px;border-radius:4px 8px 8px 4px;background:#171310;color:#F4EADA;padding:7px;box-shadow:0 10px 18px rgba(23,19,16,.3);display:flex;flex-direction:column;justify-content:space-between}
+.pf-pass small{font:600 6px var(--tk-f-mono);letter-spacing:.1em;opacity:.7}
+.pf-pass em{font:900 13px var(--tk-f-sans);font-stretch:125%;font-style:normal;color:#E9A93C}
+.pf-contract{width:56px;height:74px;border-radius:3px;background:#FFFDF8;padding:7px;box-shadow:0 8px 16px rgba(23,19,16,.2);display:flex;flex-direction:column;gap:5px}
+.pf-contract small{font:600 6px var(--tk-f-mono);letter-spacing:.1em}
+.pf-contract b{display:block;height:2px;background:rgba(23,19,16,.18);border-radius:1px}
+.pf-card{width:76px;height:48px;border-radius:7px;background:#E9A93C;color:#171310;padding:6px 7px;box-shadow:0 8px 16px rgba(23,19,16,.25);display:flex;flex-direction:column;justify-content:space-between;font:900 10px var(--tk-f-sans);font-stretch:125%;text-transform:uppercase}
+.pf-card small{font:600 6px var(--tk-f-mono);letter-spacing:.1em}
+/* number + certificate */
+.pd-label{font-weight:700;font-size:15px}
+.pd-field{width:100%;min-height:52px;border-radius:14px;border:1.5px solid rgba(23,19,16,.35);background:#FBF6EC;padding:0 16px;font:600 17px var(--tk-f-sans);color:#171310}
+.pd-field:focus{outline:2px solid #B3202B;outline-offset:2px}
+.pd-scroll{overflow-x:auto;margin:0 -20px;padding:4px 20px 8px;scroll-snap-type:x proximity;scrollbar-width:none}
+.pd-scroll::-webkit-scrollbar{display:none}
+.pd-grid{display:grid;grid-template-rows:repeat(4,44px);grid-auto-flow:column;grid-auto-columns:64px;gap:8px;width:max-content}
+.tkp{min-height:44px;border:1.5px dashed rgba(23,19,16,.45);border-radius:6px;background:#FBF6EC;font:600 13px var(--tk-f-mono);color:rgba(23,19,16,.7);display:flex;align-items:center;justify-content:center;position:relative;cursor:pointer;padding:0;scroll-snap-align:start}
+.tkp:disabled{background:#E7D9BF;color:rgba(23,19,16,.35);border-style:solid;border-color:rgba(23,19,16,.15);cursor:not-allowed}
+.tkp:disabled::after{content:'TEKILA';position:absolute;font:900 9px var(--tk-f-sans);font-stretch:125%;color:#B3202B;border:1.5px solid #B3202B;padding:1px 3px;transform:rotate(-14deg);opacity:.85}
+.tkp[aria-pressed="true"]{background:#B3202B;border:1.5px solid #B3202B;color:#fff;animation:pdStamp .35s cubic-bezier(.3,1.6,.5,1)}
+@keyframes pdStamp{0%{transform:scale(1.6) rotate(-8deg);opacity:0}100%{transform:none;opacity:1}}
+.pd-cert{position:relative;width:100%;aspect-ratio:828/1035;background-color:#E7D9BF;background-position:center;background-size:cover;background-repeat:no-repeat;border-radius:6px;box-shadow:0 18px 40px rgba(23,19,16,.22);overflow:hidden;container-type:inline-size}
+.pd-cname{position:absolute;left:10.6%;top:68.5%;width:35.7%;height:7.2%;display:grid;place-items:center;font-family:var(--tk-f-serif);font-style:italic;font-size:5.4cqw;color:#1d2a6b;text-align:center;line-height:1;overflow:hidden;white-space:nowrap}
+.pd-cname[data-empty]{color:rgba(23,19,16,.3)}
+.pd-cstamp{position:absolute;left:10.5%;top:83.5%;display:flex;flex-direction:column;align-items:center;gap:1px;border:0.5cqw solid #B3202B;color:#B3202B;border-radius:0.8cqw;padding:1.2cqw 2.2cqw;transform:rotate(-8deg);font:900 2.6cqw var(--tk-f-sans);font-stretch:125%;letter-spacing:.06em;line-height:1.1}
+.pd-cstamp b{font-size:5cqw;letter-spacing:0}
+.pd-slam{animation:pdSlam .45s cubic-bezier(.3,1.6,.5,1) both}
+.pd-s2{animation-name:pdSlam2}
+@keyframes pdSlam{from{transform:scale(2.2) rotate(-24deg);opacity:0}to{transform:rotate(-8deg);opacity:1}}
+@keyframes pdSlam2{from{transform:scale(2.2) rotate(-24deg);opacity:0}to{transform:rotate(-8deg);opacity:1}}
+/* cta */
+.pd-btn{display:flex;align-items:center;justify-content:center;min-height:58px;padding:0 24px;border-radius:999px;background:#171310;color:#F4EADA;text-decoration:none;font:700 17px var(--tk-f-sans);border:0;cursor:pointer;width:100%}
+.pd-btn:hover{background:#B3202B;color:#fff}
+.pd-btn[aria-disabled="true"]{opacity:.45;cursor:not-allowed}
+.pd-btn[aria-disabled="true"]:hover{background:#171310;color:#F4EADA}
+.pd-btn[aria-busy="true"]{opacity:.7;cursor:progress}
+.pd-pill{background:#B3202B;color:#F4EADA;padding:4px 9px;border-radius:999px;font:700 12px var(--tk-f-mono)}
+.pd-msg{margin:0;min-height:1.2em;font:500 14px var(--tk-f-mono);color:#7A1018;text-align:center}
+/* timer C */
+.tc{background:#FBF6EC;border:2px solid #171310;border-radius:22px;padding:18px;display:flex;flex-direction:column;gap:14px}
+.tc-week{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:4px}
+.tc-day{display:flex;flex-direction:column;align-items:center;gap:4px;padding:8px 0;border-radius:12px;font:600 11px var(--tk-f-mono)}
+.tc-day b{font:900 18px var(--tk-f-sans);font-stretch:125%}
+.tc-past{opacity:.3}
+.tc-today{background:#171310;color:#F4EADA}
+.tc-end{background:#B3202B;color:#F4EADA;position:relative}
+.tc-end::after{content:'CLOSES';position:absolute;bottom:-16px;font:900 8px var(--tk-f-sans);font-stretch:125%;color:#B3202B;letter-spacing:.08em}
+.tc-row{display:flex;justify-content:space-between;align-items:center;gap:10px;border-top:1.5px dashed rgba(23,19,16,.25);padding-top:14px;margin-top:8px}
+.pd-fade{animation:pdFade .35s ease both}
+@keyframes pdFade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+[hidden]{display:none!important}

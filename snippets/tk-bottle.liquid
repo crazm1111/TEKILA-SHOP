@@ -1,0 +1,9 @@
+{%- comment -%}
+  The split bottle: actuator on top, body below (both from Content → Files).
+  Params: cls (wrapper classes), style, act_cls (classes on the actuator img), body_cls, alt (empty = decorative), w (px width hint)
+{%- endcomment -%}
+{%- assign w = w | default: 400 -%}
+<span class="tk-bottle {{ cls }}"{% if style %} style="{{ style }}"{% endif %}>
+  <img class="{{ act_cls }}" src="{%- render 'tk-src', f: 'bottle-actuator.png', w: w -%}" alt="" aria-hidden="true" width="340" height="75" loading="lazy">
+  <img class="{{ body_cls }}" src="{%- render 'tk-src', f: 'bottle-body.png', w: w -%}" alt="{{ alt }}"{% if alt == blank %} aria-hidden="true"{% endif %} width="340" height="714" loading="lazy">
+</span>

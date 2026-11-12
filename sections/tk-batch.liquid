@@ -1,0 +1,44 @@
+{%- style -%}
+.ba-stage{position:relative;width:200px;height:300px;margin:0 auto}
+.ba-glow{position:absolute;left:50%;bottom:0;width:260px;height:260px;margin-left:-130px;border-radius:50%;background:radial-gradient(circle,rgba(233,169,60,.45),rgba(233,169,60,0) 65%);animation:baGlow 6s ease-in-out infinite}
+@keyframes baGlow{0%,100%{transform:scale(.85);opacity:.7}50%{transform:scale(1.05);opacity:1}}
+.ba-bottle{position:absolute;left:50%;bottom:0;width:150px;margin-left:-75px}
+.ba-rule{height:1px;background:linear-gradient(90deg,transparent,rgba(233,169,60,.6),transparent)}
+.ba-facts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;text-align:center}
+.ba-k{font:600 10px var(--tk-f-mono);letter-spacing:.16em;text-transform:uppercase;opacity:.55}
+.ba-v{font-family:var(--tk-f-serif);font-style:italic;font-size:30px;line-height:1.1;color:#E9A93C}
+.tk .ba-link{color:#F4EADA;font:700 15px var(--tk-f-sans);text-decoration:none;border-bottom:1.5px solid rgba(233,169,60,.7);padding-bottom:3px;align-self:center}
+{%- endstyle -%}
+<span id="passport"></span>
+<section aria-labelledby="ba-h-{{ section.id }}" style="background: #0E0B09; color: #F4EADA; padding: 72px 24px 80px; overflow: hidden">
+  <div style="max-width: 440px; margin: 0 auto; display: flex; flex-direction: column; gap: 28px; text-align: center">
+    <p class="mono" style="margin: 0; font-size: 11px; letter-spacing: .3em; opacity: .6">LOTE Nº <tk-time format="batch">01</tk-time></p>
+    <h2 id="ba-h-{{ section.id }}" style="margin: -8px 0 0; display: flex; flex-direction: column; align-items: center">
+      <span class="serif-i" style="font-size: 44px; line-height: 1">{{ section.settings.heading_a }}</span>
+      <span class="wide" style="font-size: 50px; line-height: .9; color: #E9A93C">{{ section.settings.heading_b }}</span>
+    </h2>
+    <div class="ba-stage" aria-hidden="true">
+      <div class="ba-glow"></div>
+      {%- render 'tk-bottle', cls: 'ba-bottle', w: 300 -%}
+    </div>
+    <p style="margin: 0; font-size: 17px; line-height: 1.6; opacity: .85">{{ section.settings.text }}</p>
+    <div class="ba-rule"></div>
+    <div class="ba-facts">
+      <div><p class="ba-k" style="margin: 0 0 6px">Batch closes in</p><p class="ba-v" style="margin: 0"><tk-time format="compact">Thursday</tk-time></p></div>
+      <div><p class="ba-k" style="margin: 0 0 6px">Order now, yours arrives</p><p class="ba-v" style="margin: 0"><tk-time format="arrive">in ~10 days</tk-time></p></div>
+    </div>
+    <a href="#reserve" class="ba-link">Reserve for Lote <tk-time format="batch">01</tk-time></a>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "TEKILA batch",
+  "settings": [
+    { "type": "text", "id": "heading_a", "label": "Heading, serif", "default": "Good things" },
+    { "type": "text", "id": "heading_b", "label": "Heading, wide", "default": "take time." },
+    { "type": "textarea", "id": "text", "label": "Text", "default": "We don't keep stock. Every Thursday we make one small batch and let it rest for ten days, until the scent settles. Then it's yours." }
+  ],
+  "presets": [{ "name": "TEKILA batch" }]
+}
+{% endschema %}

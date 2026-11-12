@@ -1,0 +1,137 @@
+{%- style -%}
+.hero2{position:relative;display:flex;flex-direction:column;background:#171310;color:#F4EADA}
+.pcard{display:flex;justify-content:space-between;align-items:center;gap:12px;border:1.5px solid rgba(244,234,218,.3);border-radius:16px;padding:14px 16px;background:rgba(244,234,218,.06);color:#F4EADA}
+.h2-media{position:relative;height:330px;margin:12px 12px 0;flex:none}
+.h2-vid{position:absolute;inset:0;border-radius:24px;overflow:hidden;background:#171310}
+.h2-vid video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.h2-copy{padding:40px 20px 40px;display:flex;flex-direction:column;gap:24px}
+.h2-h1{margin:0;font-size:44px;line-height:.92;perspective:600px}
+.h2-wl{display:block;height:1.12em;overflow:hidden;white-space:nowrap;font-family:var(--tk-f-serif);font-style:italic;font-weight:400;text-transform:none;font-stretch:100%;letter-spacing:0;color:#E9A93C;font-size:1.05em}
+.h2-ctas{display:flex;flex-direction:column;gap:10px}
+.flip-a{display:inline-block;animation:flipA .55s cubic-bezier(.2,.8,.2,1) both}
+.flip-b{display:inline-block;animation:flipB .55s cubic-bezier(.2,.8,.2,1) both}
+@keyframes flipA{from{transform:translateY(70%) rotateX(70deg);opacity:0}to{transform:none;opacity:1}}
+@keyframes flipB{from{transform:translateY(70%) rotateX(70deg);opacity:0}to{transform:none;opacity:1}}
+.h2-stamp{position:absolute;left:14px;bottom:-22px;z-index:3;border:0;background:transparent;cursor:pointer;padding:0}
+.h2-st{display:inline-flex;flex-direction:column;align-items:center;gap:3px;border:3px solid #C4222F;color:#C4222F;background:transparent;padding:8px 14px;border-radius:6px}
+.stamp-in{animation:slam .45s .7s cubic-bezier(.3,1.6,.5,1) both}
+.stamp-re{animation:slam2 .45s cubic-bezier(.3,1.6,.5,1) both}
+.stamp-re2{animation:slam3 .45s cubic-bezier(.3,1.6,.5,1) both}
+@keyframes slam{from{transform:scale(2.4) rotate(-20deg);opacity:0}to{transform:rotate(-8deg);opacity:1}}
+@keyframes slam2{from{transform:scale(2.4) rotate(-20deg);opacity:0}to{transform:rotate(-8deg);opacity:1}}
+@keyframes slam3{from{transform:scale(2.4) rotate(-20deg);opacity:0}to{transform:rotate(-8deg);opacity:1}}
+.h2-stamp>span{transform:rotate(-8deg)}
+.hero2 strong{color:#F4EADA}
+.h2-snd{position:absolute;right:12px;bottom:12px;z-index:2;width:44px;height:44px;border-radius:50%;border:0;background:rgba(14,11,9,.6);color:#F4EADA;cursor:pointer;display:grid;place-items:center;-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px)}
+.h2-snd:hover{background:rgba(179,32,43,.85)}
+.h2-snd .tk-i-on{display:none}.h2-snd[aria-pressed="true"] .tk-i-on{display:block}.h2-snd[aria-pressed="true"] .tk-i-off{display:none}
+@media (min-width:900px){.hero2{flex-direction:row;min-height:760px}.h2-media{order:2;flex:1 1 50%;height:auto;margin:24px 32px 48px 0}.h2-copy{order:1;flex:1 1 45%;justify-content:center;padding:64px}.h2-h1{font-size:104px}.h2-ctas{flex-direction:row}.h2-stamp{left:28px;bottom:-26px}}
+{%- endstyle -%}
+{%- capture poster -%}{%- render 'tk-src', f: section.settings.poster, w: 1200 -%}{%- endcapture -%}
+<tk-hero>
+<section id="top" class="hero2" data-hero>
+  <div class="h2-media">
+    <div class="h2-vid">
+      <video muted playsinline preload="metadata" data-tk-loop data-tk-hold
+        data-src="{%- render 'tk-src', f: section.settings.video -%}" poster="{{ poster | strip }}"
+        aria-label="{{ section.settings.video_alt | escape }}" width="720" height="900"></video>
+      <button type="button" class="h2-snd" data-snd aria-pressed="false" aria-label="Turn sound on">
+        <svg class="tk-i-off" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 5 6 9H2v6h4l5 4z"/><path d="m23 9-6 6"/><path d="m17 9 6 6"/></svg>
+        <svg class="tk-i-on" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 5 6 9H2v6h4l5 4z"/><path d="M15.5 8.5a5 5 0 0 1 0 7"/><path d="M19 5a10 10 0 0 1 0 14"/></svg>
+      </button>
+    </div>
+    <button type="button" class="h2-stamp" data-stamp aria-label="TEKILA Embajadores. Tap to stamp again.">
+      <span class="stamp-in" style="display: inline-flex">
+        <span class="h2-st">
+          <span class="wide" style="font-size: 26px; line-height: 1">TEKILA</span>
+          <span class="mono" style="font-size: 10px; font-weight: 600; letter-spacing: .08em">EMBAJADORES</span>
+        </span>
+      </span>
+    </button>
+  </div>
+  <div class="h2-copy">
+    {%- assign words = section.settings.words | split: ',' -%}
+    <h1 class="wide h2-h1">{{ section.settings.heading | newline_to_br }}<br><span class="h2-wl">the <span class="flip-a" data-word aria-live="off">{{ words.first | strip }}</span></span></h1>
+    <p style="margin: -6px 0 0; font-size: 16px; line-height: 1.45; color: rgba(244,234,218,.8)">{{ section.settings.tagline }}</p>
+    <div class="pcard">
+      <div style="display: flex; flex-direction: column; gap: 4px">
+        <p style="margin: 0; font-size: 15px; font-weight: 700">{{ section.settings.card_title }}</p>
+        <p class="mono" style="margin: 0; font-size: 12px; opacity: .8">{{ section.settings.card_sub }}</p>
+      </div>
+      <div style="text-align: right">
+        <p class="mono" style="margin: 0; font-size: 11px; opacity: .7; text-transform: uppercase; letter-spacing: .08em">Batch closes</p>
+        <p class="mono" style="margin: 0; font-size: 14px; font-weight: 600"><tk-time format="long">Thursday 11:59 pm</tk-time></p>
+      </div>
+    </div>
+    <div class="h2-ctas">
+      <a href="#reserve" class="btn btn-light">{{ section.settings.cta_1 }}</a>
+      <a href="#ritual" class="btn btn-ghost-light">{{ section.settings.cta_2 }}</a>
+    </div>
+  </div>
+</section>
+<script type="application/json" data-words>{{ words | json }}</script>
+</tk-hero>
+<link rel="preload" as="image" href="{{ poster | strip }}">
+<script>
+  if (!customElements.get('tk-hero')) customElements.define('tk-hero', class extends HTMLElement {
+    connectedCallback() {
+      var words = []; try { words = JSON.parse(this.querySelector('[data-words]').textContent).map(function (w) { return w.trim(); }); } catch (e) {}
+      var w = this.querySelector('[data-word]'), i = 0, v = this.querySelector('video');
+      if (words.length > 1) setInterval(function () { i++; w.textContent = words[i % words.length]; w.className = i % 2 ? 'flip-b' : 'flip-a'; }, 2200);
+      var st = this.querySelector('[data-stamp]'), inner = st.firstElementChild, k = 0;
+      st.addEventListener('click', function () { if (window.TK) TK.thunk(); k++; inner.className = k % 2 ? 'stamp-re' : 'stamp-re2'; });
+      /* Hero video: plays once from the start with sound, then loops muted.
+         Its own speaker button turns sound on/off at any time. */
+      var snd = this.querySelector('[data-snd]'), looping = false, started = false;
+      var sync = function () { var on = !v.muted && !v.paused; snd.setAttribute('aria-pressed', on ? 'true' : 'false'); snd.setAttribute('aria-label', on ? 'Mute the video' : 'Turn sound on'); };
+      var play = function () { var r = v.play(); if (r && r.catch) r.catch(function () { if (!v.muted) { v.muted = true; sync(); var r2 = v.play(); if (r2 && r2.catch) r2.catch(function () {}); } }); };
+      var start = function (withSound) {
+        if (started) return; started = true;
+        if (window.TK) TK.loadVideo(v);
+        v.loop = false; try { v.currentTime = 0; } catch (e) {}
+        if (withSound) { if (window.TK) TK.claimSound(v); v.muted = false; } else v.muted = true;
+        play(); sync();
+      };
+      v.addEventListener('ended', function () { if (!looping) { looping = true; v.loop = true; v.muted = true; play(); sync(); } });
+      v.addEventListener('volumechange', sync); v.addEventListener('play', sync); v.addEventListener('pause', sync);
+      snd.addEventListener('click', function () {
+        if (!started) { start(true); return; }
+        if (v.muted) { if (window.TK) TK.claimSound(v); v.muted = false; if (v.paused) play(); } else v.muted = true;
+        sync();
+      });
+      /* someone else started playing sound (reviews, gatherings, Cartas): hero goes quiet */
+      document.addEventListener('tk:sound', function (e) { if (e.detail.owner !== v && !v.muted) { v.muted = true; sync(); } });
+      /* pause when scrolled away, resume (muted loop) when back */
+      if ('IntersectionObserver' in window) new IntersectionObserver(function (es) {
+        es.forEach(function (en) { if (!started) return; if (en.isIntersecting) { if (v.paused) play(); } else if (!v.paused) { v.muted = true; v.pause(); } });
+      }, { threshold: .25 }).observe(v);
+      /* First visit: wait for the 3 presses / Skip (a tap, so sound is allowed).
+         Return visit: start once tk-core has loaded; browsers may refuse sound until a tap, then it plays muted. */
+      var boot = function () {
+        var reduced = window.TK && TK.reduced();
+        if (document.documentElement.classList.contains('tk-intro-on')) document.addEventListener('tk:intro-done', function () { if (!reduced) start(true); });
+        else if (!reduced) start(true);
+      };
+      if (window.TK) boot(); else document.addEventListener('DOMContentLoaded', boot);
+    }
+  });
+</script>
+
+{% schema %}
+{
+  "name": "TEKILA hero",
+  "settings": [
+    { "type": "text", "id": "video", "label": "Video (file name or URL)", "default": "hero-tekilaaa.mp4" },
+    { "type": "text", "id": "poster", "label": "Poster (file name or URL)", "default": "hero-poster.jpg" },
+    { "type": "text", "id": "video_alt", "label": "Video description", "default": "Strangers at a TEKILA gathering shouting TEKILA" },
+    { "type": "textarea", "id": "heading", "label": "Headline (one word per line)", "default": "Three\nsplashes\nbefore" },
+    { "type": "text", "id": "words", "label": "Flipping words (comma separated)", "default": "date., room., presentation., call., heavy moment." },
+    { "type": "inline_richtext", "id": "tagline", "label": "Tagline", "default": "<strong>TEKILA Anxiety</strong> · a perfume ritual for your heavy moments." },
+    { "type": "text", "id": "card_title", "label": "Card title", "default": "Passports 101–200" },
+    { "type": "text", "id": "card_sub", "label": "Card line", "default": "Window closes 31 Dec" },
+    { "type": "text", "id": "cta_1", "label": "Button 1", "default": "Reserve yours" },
+    { "type": "text", "id": "cta_2", "label": "Button 2", "default": "How the ritual works" }
+  ],
+  "presets": [{ "name": "TEKILA hero" }]
+}
+{% endschema %}

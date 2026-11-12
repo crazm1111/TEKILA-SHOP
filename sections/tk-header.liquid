@@ -1,0 +1,39 @@
+{%- liquid
+  assign home = routes.root_url
+  if template.name == 'index'
+    assign home = ''
+  endif
+-%}
+{%- if template.name == 'product' -%}
+  <div class="pd-top">
+    <a href="{{ routes.root_url }}" class="mono" style="font-size: 13px">← Home</a>
+    <a href="{{ routes.root_url }}" class="wide" style="font-size: 20px" aria-label="TEKILA home">Tekila</a>
+    <span class="mono" style="font-size: 12px; opacity: .8"><tk-time format="closes">Closes Thursday</tk-time></span>
+  </div>
+{%- else -%}
+  <div class="tk-site-chrome">
+    <div class="tk-ann">
+      <span class="mono" style="font-weight: 600">Batch <tk-time format="batch">01</tk-time> closes in <tk-time format="long">Thursday 11:59 pm</tk-time></span>
+      <span style="opacity: .7">{{ section.settings.ann_line | escape }}</span>
+    </div>
+    <header class="tk-head">
+      <a href="{{ home }}#top" class="wide" style="font-size: 26px; text-decoration: none">Tekila</a>
+      <nav aria-label="Main">
+        <a href="{{ home }}#ritual" class="tk-navlink">The ritual</a>
+        <a href="{{ section.settings.product_url | default: '/products/tekila-anxiety' }}?edition=passport" class="tk-navlink">Passport</a>
+        <a href="{{ home }}#reserve" class="btn" style="min-height: 44px; padding: 0 20px; font-size: 14px">Reserve</a>
+      </nav>
+    </header>
+  </div>
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "TEKILA header",
+  "class": "tk-header-section",
+  "settings": [
+    { "type": "text", "id": "ann_line", "label": "Announcement line", "default": "Free delivery across Cairo & Giza" },
+    { "type": "text", "id": "product_url", "label": "Product page path", "default": "/products/tekila-anxiety" }
+  ]
+}
+{% endschema %}

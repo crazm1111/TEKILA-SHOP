@@ -1,0 +1,192 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+  "layout": "tekila",
+  "sections": {
+    "main": {
+      "type": "tk-product",
+      "settings": {
+        "title_a": "Tekila",
+        "title_b": "Anxiety",
+        "what_it_is": "A perfume you splash on right before a heavy moment: a date, a presentation, a room full of strangers.",
+        "future_price": "2,900 EGP from 1 January 2027",
+        "upgrade_note": "Not sure yet? Upgrade to the Passport for <strong>700 EGP</strong> anytime before 31 Dec.",
+        "certificate": "passport-certificate.jpg",
+        "worker_url": "",
+        "go_to_checkout": true
+      }
+    },
+    "gatherings": {
+      "type": "tk-gatherings",
+      "blocks": {
+        "c1": {
+          "type": "clip",
+          "settings": {
+            "video": "gather-2.mp4",
+            "poster": "gather-2.jpg",
+            "caption": "The dancing"
+          }
+        },
+        "c2": {
+          "type": "clip",
+          "settings": {
+            "video": "gather-3.mp4",
+            "poster": "gather-3.jpg",
+            "caption": "Game night"
+          }
+        },
+        "c3": {
+          "type": "clip",
+          "settings": {
+            "video": "gather-4.mp4",
+            "poster": "gather-4.jpg",
+            "caption": "“TEKILAAA”"
+          }
+        },
+        "c4": {
+          "type": "clip",
+          "settings": {
+            "video": "gather-5.mp4",
+            "poster": "gather-5.jpg",
+            "caption": "Getting stamped"
+          }
+        },
+        "c5": {
+          "type": "clip",
+          "settings": {
+            "video": "gather-1.mp4",
+            "poster": "gather-1.jpg",
+            "caption": "Strangers, dancing"
+          }
+        }
+      },
+      "block_order": [
+        "c1",
+        "c2",
+        "c3",
+        "c4",
+        "c5"
+      ],
+      "settings": {
+        "heading_a": "Every month,",
+        "heading_b": "a room full of strangers.",
+        "text": "Games, dancing, letters and a lot of noise. Passport holders get a seat at every one.",
+        "loop_video": "gather-compilation.mp4",
+        "loop_poster": "gather-compilation.jpg",
+        "loop_caption": "Gathering Nº 06"
+      }
+    },
+    "reviews": {
+      "type": "tk-reviews",
+      "blocks": {
+        "r1": {
+          "type": "review",
+          "settings": {
+            "video": "review-best-scent.mp4",
+            "poster": "review-best-scent.jpg",
+            "quote": "Best scent I ever smelled."
+          }
+        },
+        "r2": {
+          "type": "review",
+          "settings": {
+            "video": "review-feel-home.mp4",
+            "poster": "review-feel-home.jpg",
+            "quote": "It makes me feel home."
+          }
+        },
+        "r3": {
+          "type": "review",
+          "settings": {
+            "video": "review-hyper-sweet.mp4",
+            "poster": "review-hyper-sweet.jpg",
+            "quote": "Hyper and sweet."
+          }
+        },
+        "r4": {
+          "type": "review",
+          "settings": {
+            "video": "review-smells-good.mp4",
+            "poster": "review-smells-good.jpg",
+            "quote": "It smells really good."
+          }
+        }
+      },
+      "block_order": [
+        "r1",
+        "r2",
+        "r3",
+        "r4"
+      ],
+      "settings": {
+        "heading_a": "They did",
+        "heading_b": "the scary thing.",
+        "subline": "Reviews filmed inside our strangers gatherings. No friends, no plus-ones. Just strangers and TEKILA."
+      }
+    },
+    "details": {
+      "type": "tk-accordions",
+      "blocks": {
+        "a1": {
+          "type": "item",
+          "settings": {
+            "title": "Delivery & payment",
+            "body": "<p>Free delivery. Batches close every Thursday at 11:59 pm, are made and aged for about 10 days, then delivered. Pay by InstaPay within 24 hours of reserving; we confirm every order on WhatsApp.</p>",
+            "link_label": "",
+            "link": ""
+          }
+        },
+        "a2": {
+          "type": "item",
+          "settings": {
+            "title": "Returns & replacements",
+            "body": "<p>Every bottle is made for you after you reserve it, so all sales are final. If it arrives broken or faulty, send us a photo on WhatsApp and we replace it.</p>",
+            "link_label": "",
+            "link": ""
+          }
+        },
+        "a3": {
+          "type": "item",
+          "settings": {
+            "title": "Safety & storage",
+            "body": "<p>For external use. Avoid your eyes and broken skin, and patch-test if your skin is sensitive. Keep it away from heat and flame, out of direct sun, and out of reach of children.</p>",
+            "link_label": "",
+            "link": ""
+          }
+        },
+        "a4": {
+          "type": "item",
+          "settings": {
+            "title": "Questions? Talk to us",
+            "body": "<p>A real person answers on WhatsApp, usually within the day.</p>",
+            "link_label": "Message us on WhatsApp",
+            "link": "https://wa.me/201114940444"
+          }
+        }
+      },
+      "block_order": [
+        "a1",
+        "a2",
+        "a3",
+        "a4"
+      ],
+      "settings": {
+        "style": "pdp",
+        "heading": "Details"
+      }
+    }
+  },
+  "order": [
+    "main",
+    "gatherings",
+    "reviews",
+    "details"
+  ]
+}

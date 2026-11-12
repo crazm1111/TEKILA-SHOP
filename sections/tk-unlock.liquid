@@ -1,0 +1,42 @@
+{%- liquid
+  assign goal = section.settings.goal
+  assign sold = shop.metafields.tekila.sold_count.value | default: 0
+  if sold > goal
+    assign sold = goal
+  endif
+  assign to_go = goal | minus: sold
+  assign pct = sold | times: 100 | divided_by: goal
+  assign lock = '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#171310" stroke-width="1.8" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2"></rect><path d="M8 11V7a4 4 0 0 1 8 0v4"></path></svg>'
+-%}
+<section aria-labelledby="unlock-h-{{ section.id }}" style="max-width: 1200px; margin: 0 auto; padding: 48px 24px; display: flex; flex-wrap: wrap; gap: 32px; align-items: center; justify-content: space-between">
+  <div style="flex: 1 1 380px; display: flex; flex-direction: column; gap: 16px">
+    <h2 id="unlock-h-{{ section.id }}" class="wide" style="margin: 0; font-size: clamp(22px, 3vw, 34px); line-height: 1">{{ section.settings.heading }} <span class="mono" style="font-stretch: 100%">#{{ goal }}</span></h2>
+    <div style="height: 14px; background: #F4EADA; border-radius: 999px; overflow: hidden; border: 1.5px solid #171310" role="progressbar" aria-valuemin="0" aria-valuemax="{{ goal }}" aria-valuenow="{{ sold }}" aria-label="Bottles reserved toward the unlock">
+      <div style="width: {{ pct }}%; height: 100%; background: #C9861A"></div>
+    </div>
+    <p class="mono" style="margin: 0; font-size: 14px">
+      {%- if sold < section.settings.low_threshold -%}
+        {{ to_go }} bottles to go. Every bottle brings the next scent closer.
+      {%- else -%}
+        {{ sold }} / {{ goal }} reserved. Every bottle brings the next scent closer.
+      {%- endif -%}
+    </p>
+  </div>
+  <div style="display: flex; gap: 14px" aria-hidden="true">
+    <div style="width: 92px; height: 132px; border-radius: 14px; background: #F4EADA; border: 1.5px dashed rgba(23,19,16,.4); display: flex; align-items: center; justify-content: center; flex-direction: column; gap: 6px">{{ lock }}<span class="wide" style="font-size: 12px">ADHD</span></div>
+    <div style="width: 92px; height: 132px; border-radius: 14px; background: #F4EADA; border: 1.5px dashed rgba(23,19,16,.4); display: flex; align-items: center; justify-content: center; flex-direction: column; gap: 6px">{{ lock }}<span class="wide" style="font-size: 12px">Nicotine</span></div>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "TEKILA unlock",
+  "settings": [
+    { "type": "text", "id": "heading", "label": "Heading", "default": "ADHD and Nicotine unlock at Anxiety" },
+    { "type": "number", "id": "goal", "label": "Unlock at (bottles)", "default": 500 },
+    { "type": "number", "id": "low_threshold", "label": "Show “bottles to go” while fewer than this are reserved", "default": 250 },
+    { "type": "paragraph", "content": "The count comes from the shop metafield tekila.sold_count (updated by Shopify Flow on every order)." }
+  ],
+  "presets": [{ "name": "TEKILA unlock" }]
+}
+{% endschema %}

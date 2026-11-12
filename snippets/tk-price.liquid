@@ -1,0 +1,2 @@
+{%- comment -%} Price in cents → "1,800 EGP" {%- endcomment -%}
+{%- if cents -%}{{ cents | money_without_currency | remove: '.00' }} EGP{%- endif -%}

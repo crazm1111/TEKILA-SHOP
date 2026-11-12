@@ -1,0 +1,76 @@
+/* TEKILA base: tokens, type, buttons, mute, shared bits. Loaded by layout/tekila.liquid */
+:root{
+  --tk-ink:#171310;--tk-ink-deep:#0E0B09;
+  --tk-cream:#F4EADA;--tk-paper:#FBF6EC;--tk-kraft-light:#E7D9BF;--tk-kraft:#D8C3A0;
+  --tk-red:#B3202B;--tk-red-alt:#C4222F;
+  --tk-amber:#E9A93C;--tk-amber-dark:#C9861A;
+  --tk-f-sans:'Archivo',system-ui,sans-serif;
+  --tk-f-serif:'Instrument Serif',Georgia,serif;
+  --tk-f-mono:'JetBrains Mono',ui-monospace,monospace;
+}
+*,*::before,*::after{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+[hidden]{display:none!important}
+body.tk{margin:0;background:var(--tk-kraft-light);color:var(--tk-ink);font-family:var(--tk-f-sans);-webkit-font-smoothing:antialiased;overflow-x:hidden}
+.tk img,.tk video{max-width:100%}
+.tk a{color:var(--tk-ink)}.tk a:hover{color:var(--tk-red)}
+.tk button{font-family:inherit}
+.tk :focus-visible{outline:3px solid var(--tk-amber);outline-offset:2px}
+.wide{font-stretch:125%;font-weight:900;letter-spacing:-0.01em;text-transform:uppercase}
+.serif{font-family:var(--tk-f-serif);font-weight:400}
+.serif-i{font-family:var(--tk-f-serif);font-weight:400;font-style:italic;text-transform:none;font-stretch:100%;letter-spacing:0}
+.mono{font-family:var(--tk-f-mono)}
+.tk-sr{position:absolute!important;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+.tk-skip{position:absolute;left:12px;top:-60px;z-index:100;background:var(--tk-ink);color:var(--tk-cream)!important;padding:12px 16px;border-radius:999px;text-decoration:none}
+.tk-skip:focus{top:12px}
+
+/* buttons */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:10px;min-height:52px;padding:0 28px;border-radius:999px;background:var(--tk-ink);color:var(--tk-cream)!important;text-decoration:none;font-weight:700;font-size:16px;border:0;cursor:pointer;transition:transform .2s ease,background .2s ease}
+.btn:hover{background:var(--tk-red);color:#fff!important;transform:translateY(-2px)}
+.btn-light{background:var(--tk-cream);color:var(--tk-ink)!important}
+.btn-light:hover{background:#fff;color:var(--tk-ink)!important}
+.btn-ghost-light{background:transparent;color:var(--tk-cream)!important;border:1.5px solid rgba(244,234,218,.7)}
+.btn-ghost-light:hover{background:var(--tk-cream);color:var(--tk-ink)!important}
+
+/* announcement + header (home and inner pages) */
+.tk-ann{background:var(--tk-ink);color:var(--tk-cream);padding:10px 20px;display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:8px 20px;font-size:13px;text-align:center}
+.tk-head{display:flex;justify-content:space-between;align-items:center;padding:18px clamp(20px,4vw,56px);gap:16px}
+.tk-head nav{display:flex;gap:24px;align-items:center;flex-wrap:wrap;font-weight:600;font-size:15px}
+.tk-head nav a{text-decoration:none}
+@media (max-width:600px){.tk-navlink{display:none}}
+/* product page top bar */
+.pd-top{display:flex;justify-content:space-between;align-items:center;padding:14px 20px;background:var(--tk-ink);color:var(--tk-cream)}
+.pd-top a{color:var(--tk-cream)!important;text-decoration:none}
+/* while the first-visit intro runs, the site chrome waits */
+html.tk-intro-on .tk-site-chrome{display:none}
+/* the intro can't be scrolled past: only the nozzle or Skip lets you in */
+html.tk-intro-on,html.tk-intro-on body{overflow:hidden;overscroll-behavior:none}
+
+/* mute */
+.tk-mute{position:fixed;right:20px;bottom:20px;z-index:50;width:52px;height:52px;border-radius:50%;border:0;background:var(--tk-ink);color:var(--tk-cream);cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 6px 20px rgba(0,0,0,.25);transition:bottom .35s ease}
+.tk-mute:hover{background:var(--tk-red)}
+.tk-mute .tk-i-on{display:block}.tk-mute .tk-i-off{display:none}
+.tk-mute[aria-pressed="true"] .tk-i-on{display:none}.tk-mute[aria-pressed="true"] .tk-i-off{display:block}
+@media (max-width:899px){body.tk-bar-on .tk-mute{bottom:84px}}
+
+/* split bottle (actuator + body) */
+.tk-bottle img{display:block;width:100%;height:auto}
+.tk-bottle img+img{margin-top:-1px}
+
+/* small stamp */
+.stamp{display:inline-block;font:900 13px var(--tk-f-sans);font-stretch:125%;letter-spacing:.04em;color:var(--tk-red);border:2px solid var(--tk-red);padding:3px 8px;transform:rotate(-6deg)}
+
+/* footer */
+.tk-foot{background:var(--tk-ink);color:var(--tk-cream)}
+.tk-foot a{color:var(--tk-cream)!important}
+.tk-foot-line p{margin:0}
+
+/* big wide headlines: shrink to fit phones narrower than the 390px design, design size above that */
+.tk .rd-big{font-size:min(66px,calc((100vw - 48px) / 6.5))}
+.tk .rd-ctitle{font-size:min(72px,calc((100vw - 96px) / 6.8))}
+.tk #reserve h2 .cb-wide{font-size:min(50px,calc((100vw - 40px) / 7.6))!important}
+.tk #cartas h2 .cj-serif{display:block}
+.tk [id^="ba-h"] .wide{font-size:min(50px,calc((100vw - 52px) / 7.5))!important}
+
+/* reduced motion: every TEKILA animation and transition stops */
+@media (prefers-reduced-motion:reduce){.tk *,.tk *::before,.tk *::after{animation:none!important;transition:none!important}}

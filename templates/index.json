@@ -1,0 +1,100 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+  "layout": "tekila",
+  "sections": {
+    "intro": { "type": "tk-intro", "settings": { "heading_a": "Three sprays.", "heading_b": "Then you go.", "text": "Press the nozzle three times to enter." } },
+    "hero": {
+      "type": "tk-hero",
+      "settings": {
+        "video": "hero-tekilaaa.mp4",
+        "poster": "hero-poster.jpg",
+        "video_alt": "Strangers at a TEKILA gathering shouting TEKILA",
+        "heading": "Three\nsplashes\nbefore",
+        "words": "date., room., presentation., call., heavy moment.",
+        "tagline": "<strong>TEKILA Anxiety</strong> · a perfume ritual for your heavy moments.",
+        "card_title": "Passports 101–200",
+        "card_sub": "Window closes 31 Dec",
+        "cta_1": "Reserve yours",
+        "cta_2": "How the ritual works"
+      }
+    },
+    "cartas": {
+      "type": "tk-cartas",
+      "blocks": {
+        "v1": { "type": "voice", "settings": { "number": 1, "audio": "phone-1.mp4" } },
+        "v2": { "type": "voice", "settings": { "number": 2, "audio": "phone-2.mp4" } },
+        "v3": { "type": "voice", "settings": { "number": 3, "audio": "phone-3.mp4" } },
+        "v4": { "type": "voice", "settings": { "number": 4, "audio": "phone-4.mp4" } }
+      },
+      "block_order": ["v1", "v2", "v3", "v4"],
+      "settings": { "worker_url": "", "shown": 20, "seat_line": "Best letter each month wins a seat at our next" }
+    },
+    "ritual": {
+      "type": "tk-ritual-deck",
+      "settings": {
+        "intro": "Three steps. The same three, every time, until your body knows the way.",
+        "moments": "Before the room.|Before the date.|Before the call.|Before the presentation.",
+        "img_splash": "img-3.jpg",
+        "img_go": "img-8.jpg"
+      }
+    },
+    "reviews": {
+      "type": "tk-reviews",
+      "blocks": {
+        "r1": { "type": "review", "settings": { "video": "review-best-scent.mp4", "poster": "review-best-scent.jpg", "quote": "Best scent I ever smelled." } },
+        "r2": { "type": "review", "settings": { "video": "review-feel-home.mp4", "poster": "review-feel-home.jpg", "quote": "It makes me feel home." } },
+        "r3": { "type": "review", "settings": { "video": "review-hyper-sweet.mp4", "poster": "review-hyper-sweet.jpg", "quote": "Hyper and sweet." } },
+        "r4": { "type": "review", "settings": { "video": "review-smells-good.mp4", "poster": "review-smells-good.jpg", "quote": "It smells really good." } }
+      },
+      "block_order": ["r1", "r2", "r3", "r4"],
+      "settings": {
+        "heading_a": "They did",
+        "heading_b": "the scary thing.",
+        "subline": "Reviews filmed inside our strangers gatherings. No friends, no plus-ones. Just strangers and TEKILA."
+      }
+    },
+    "choose": {
+      "type": "tk-choose-box",
+      "settings": {
+        "product": "tekila-anxiety",
+        "subline": "Every bottle is made after you reserve it.",
+        "upgrade": "Start with the Ritual. Upgrade to the Passport for <strong>700 EGP</strong> anytime before 31 Dec.",
+        "window_line": "Window 1 closes 31 Dec",
+        "future_price": "2,900 EGP from 1 January 2027"
+      }
+    },
+    "batch": {
+      "type": "tk-batch",
+      "settings": {
+        "heading_a": "Good things",
+        "heading_b": "take time.",
+        "text": "We don't keep stock. Every Thursday we make one small batch and let it rest for ten days, until the scent settles. Then it's yours."
+      }
+    },
+    "unlock": { "type": "tk-unlock", "settings": { "heading": "ADHD and Nicotine unlock at Anxiety", "goal": 500, "low_threshold": 250 } },
+    "faq": {
+      "type": "tk-accordions",
+      "blocks": {
+        "q1": { "type": "item", "settings": { "title": "Is it medicine?", "body": "<p>No. It's a perfume and a ritual. It doesn't treat anxiety; it reminds you to be present before a heavy moment.</p>" } },
+        "q2": { "type": "item", "settings": { "title": "When will it arrive?", "body": "<p>Batches close every Thursday at 11:59 pm. Your bottle is made and aged after that, and arrives about 10 days later.</p>" } },
+        "q3": { "type": "item", "settings": { "title": "Is delivery free?", "body": "<p>Yes, across Cairo and Giza, by courier.</p>" } },
+        "q4": { "type": "item", "settings": { "title": "How do I pay?", "body": "<p>By InstaPay, within 24 hours of reserving. We confirm every order personally on WhatsApp.</p>" } },
+        "q5": { "type": "item", "settings": { "title": "Can I cancel?", "body": "<p>Every bottle is made for you after you reserve it, so all sales are final. If your bottle arrives broken or faulty, we replace it.</p>" } },
+        "q6": { "type": "item", "settings": { "title": "Can I gift it?", "body": "<p>Yes. Add their name at checkout and it goes on the passport and contract, with your note.</p>" } },
+        "q7": { "type": "item", "settings": { "title": "What do passport holders get?", "body": "<p>The WhatsApp community, monthly gatherings, exclusive brand deals, first access to new drops, member prices and a stamp code for friends.</p>" } }
+      },
+      "block_order": ["q1", "q2", "q3", "q4", "q5", "q6", "q7"],
+      "settings": { "style": "faq", "heading": "Questions" }
+    },
+    "sticky": { "type": "tk-sticky-bar", "settings": { "cta": "Reserve" } }
+  },
+  "order": ["intro", "hero", "cartas", "ritual", "reviews", "choose", "batch", "unlock", "faq", "sticky"]
+}

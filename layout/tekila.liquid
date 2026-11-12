@@ -1,0 +1,49 @@
+<!doctype html>
+{%- liquid
+  assign batch_start = shop.metafields.tekila.batch_start.value | date: '%Y-%m-%d'
+  assign is_home = false
+  if template.name == 'index'
+    assign is_home = true
+  endif
+-%}
+<html
+  lang="{{ request.locale.iso_code }}"
+  class="no-js{% if request.design_mode %} shopify-design-mode{% endif %}"
+  {% if batch_start != blank %}data-batch-start="{{ batch_start }}"{% endif %}
+  data-batch-fallback="1"
+>
+  <head>
+    {%- if settings.favicon != blank -%}
+      <link rel="icon" type="image/png" href="{{ settings.favicon | image_url: width: 32, height: 32 }}">
+    {%- endif -%}
+    {%- render 'meta-tags' -%}
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,100..900&family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;600&display=swap">
+    {{ 'tk-base.css' | asset_url | stylesheet_tag }}
+    <script src="{{ 'tk-core.js' | asset_url }}" defer></script>
+
+    {%- if is_home and request.design_mode == false -%}
+      <script>
+        /* First visit only: hold the site chrome back while the intro plays. */
+        try { if (!localStorage.getItem('tk-intro-seen')) document.documentElement.classList.add('tk-intro-on'); } catch (e) {}
+      </script>
+    {%- endif -%}
+
+    {{ content_for_header }}
+  </head>
+
+  <body class="tk tk-tpl-{{ template.name }}">
+    <a class="tk-skip" href="#MainContent">Skip to content</a>
+
+    {% section 'tk-header' %}
+
+    <main id="MainContent" role="main" tabindex="-1">
+      {{ content_for_layout }}
+    </main>
+
+    {% section 'tk-footer' %}
+
+  </body>
+</html>
