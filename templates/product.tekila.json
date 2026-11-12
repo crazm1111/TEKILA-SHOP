@@ -15,7 +15,8 @@
       "settings": {
         "title_a": "Tekila",
         "title_b": "Anxiety",
-        "what_it_is": "A perfume you splash on right before a heavy moment: a date, a presentation, a room full of strangers.",
+        "what_a": "A perfume you splash on right before a heavy moment:",
+        "what_b": "a date, a presentation, a room full of strangers.",
         "future_price": "2,900 EGP from 1 January 2027",
         "upgrade_note": "Not sure yet? Upgrade to the Passport for <strong>700 EGP</strong> anytime before 31 Dec.",
         "certificate": "passport-certificate.jpg",

@@ -1,4 +1,4 @@
-/* TEKILA product page (ported from design/ProductPage.dc.html) */
+/* TEKILA product page v3 (ported from design/ProductPageV3.dc.html): the two choice cards are the only boxes. */
 body.tk-tpl-product{background:var(--tk-cream)}
 .pd-wide{font-stretch:125%;font-weight:900;text-transform:uppercase;letter-spacing:-0.01em}
 .pd-serif{font-family:var(--tk-f-serif);font-weight:400;font-style:italic}
@@ -18,19 +18,35 @@ body.tk-tpl-product{background:var(--tk-cream)}
 .pd-th-play{position:absolute;inset:0;display:grid;place-items:center;color:#F4EADA}
 /* main column */
 .pd-main{padding:24px 20px 48px;max-width:520px;margin:0 auto;display:flex;flex-direction:column;gap:22px}
-/* description */
-.pd-desc{background:#171310;color:#F4EADA;border-radius:22px;padding:22px 20px;display:flex;flex-direction:column;gap:16px}
-.pd-facts{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
-.pd-fact{background:rgba(244,234,218,.08);border-radius:14px;padding:12px 8px;text-align:center;display:flex;flex-direction:column;gap:3px}
-.pd-fact b{font:900 20px var(--tk-f-sans);font-stretch:125%;color:#E9A93C}
-.pd-fact span{font-size:12px;line-height:1.25;opacity:.8}
-.pd-steps{display:flex;align-items:center;justify-content:center;gap:8px;font:900 13px var(--tk-f-sans);font-stretch:125%;text-transform:uppercase;letter-spacing:.04em}
-.pd-steps i{font-style:normal;opacity:.4}
-/* delivery */
-.pd-ship{display:flex;align-items:center;gap:10px;background:#E9A93C;color:#171310;border-radius:14px;padding:12px 14px;font-size:15px}
+/* what it is + delivery: plain, no boxes */
+.pd-facts3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr))}
+.pd-facts3 div{display:flex;flex-direction:column;gap:2px;padding:0 12px;border-left:1.5px solid rgba(23,19,16,.2)}
+.pd-facts3 div:first-child{padding-left:0;border-left:0}
+.pd-facts3 b{font:900 22px var(--tk-f-sans);font-stretch:125%;line-height:1}
+.pd-facts3 span{font-size:12px;opacity:.7;line-height:1.25}
+.pd-ship2{display:flex;align-items:center;gap:10px;font-size:15px}
+.pd-ship2 svg{flex:none;width:34px;height:34px;padding:7px;border-radius:50%;background:#E9A93C;color:#171310}
 /* choice cards */
 .pd-card{position:relative;width:100%;text-align:left;border-radius:22px;padding:20px;cursor:pointer;display:flex;flex-direction:column;gap:12px;transition:transform .2s,box-shadow .2s,border-color .2s;font:inherit;background:#FBF6EC;color:#171310;border:2.5px solid rgba(23,19,16,.18)}
-.pd-card[aria-checked="true"]{border-color:#B3202B;box-shadow:0 0 0 3px #B3202B}
+.pd-card[aria-checked="true"]{border-color:#B3202B;box-shadow:0 0 0 3px #B3202B;cursor:default}
+.pd-card:focus-visible{outline:3px solid var(--tk-amber);outline-offset:3px}
+.pd-tt{display:flex;flex-direction:column;gap:6px}
+.pd-tname{font-size:28px;line-height:1}
+/* unselected card when the other is chosen: compact, no pictures, benefits still visible */
+.pd-collapsed{padding:16px 18px;gap:8px}
+.pd-collapsed>.pd-float{display:none}
+.pd-collapsed .pd-tt{flex-direction:row;align-items:baseline;gap:10px}
+.pd-collapsed .pd-tname{font-size:20px}
+.pd-collapsed .pd-perk{font-size:14px;opacity:.8}
+.pd-collapsed .pd-badge{display:none}
+/* make it yours, inside the Passport card */
+.pd-mk{display:flex;flex-direction:column;gap:12px;border-top:1.5px dashed rgba(23,19,16,.25);padding-top:16px;margin-top:4px;cursor:default}
+.pd-cert-sm{width:68%;align-self:center}
+.pd-scroll-in{margin:0 -20px;padding:4px 20px 8px}
+.pd-back{align-self:flex-start;border:0;background:none;padding:4px 0;font:600 14px var(--tk-f-sans);color:#171310;text-decoration:underline;cursor:pointer}
+.pd-bigstamp{position:absolute;left:50%;top:44%;display:flex;flex-direction:column;align-items:center;gap:1cqw;border:1.4cqw solid #C4222F;color:#C4222F;background:transparent;border-radius:2cqw;padding:2.5cqw 5cqw;font:900 14cqw var(--tk-f-sans);font-stretch:125%;line-height:.9;letter-spacing:.02em;opacity:.88;mix-blend-mode:multiply;transform:translate(-50%,-50%) rotate(-14deg);animation:pdBig .55s cubic-bezier(.3,1.5,.5,1) both;pointer-events:none}
+.pd-bigstamp small{font:700 4cqw var(--tk-f-mono);letter-spacing:.3em}
+@keyframes pdBig{0%{transform:translate(-50%,-50%) scale(2.6) rotate(-30deg);opacity:0}100%{transform:translate(-50%,-50%) scale(1) rotate(-14deg);opacity:.88}}
 .pd-card[aria-disabled="true"]{opacity:.5;cursor:not-allowed}
 .pd-gperk{display:flex;gap:12px;align-items:center}
 .pd-radio{position:absolute;right:18px;top:18px;width:26px;height:26px;border-radius:50%;border:2px solid currentColor;display:grid;place-items:center;opacity:.8;color:transparent}
@@ -85,9 +101,10 @@ body.tk-tpl-product{background:var(--tk-cream)}
 .pd-btn[aria-disabled="true"]:hover{background:#171310;color:#F4EADA}
 .pd-btn[aria-busy="true"]{opacity:.7;cursor:progress}
 .pd-pill{background:#B3202B;color:#F4EADA;padding:4px 9px;border-radius:999px;font:700 12px var(--tk-f-mono)}
-.pd-msg{margin:0;min-height:1.2em;font:500 14px var(--tk-f-mono);color:#7A1018;text-align:center}
-/* timer C */
-.tc{background:#FBF6EC;border:2px solid #171310;border-radius:22px;padding:18px;display:flex;flex-direction:column;gap:14px}
+.pd-msg{margin:0;font:500 13px var(--tk-f-mono);color:#7A1018;text-align:center}
+.pd-msg:empty{display:none}
+/* this week's batch: plain, no border, no background */
+.tc{display:flex;flex-direction:column;gap:14px}
 .tc-week{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:4px}
 .tc-day{display:flex;flex-direction:column;align-items:center;gap:4px;padding:8px 0;border-radius:12px;font:600 11px var(--tk-f-mono)}
 .tc-day b{font:900 18px var(--tk-f-sans);font-stretch:125%}
@@ -99,3 +116,5 @@ body.tk-tpl-product{background:var(--tk-cream)}
 .pd-fade{animation:pdFade .35s ease both}
 @keyframes pdFade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
 [hidden]{display:none!important}
+
+@media (prefers-reduced-motion:reduce){.pd-bigstamp,.pd-slam,.pf,.pd-fade,.tkp[aria-pressed="true"]{animation:none!important}}
