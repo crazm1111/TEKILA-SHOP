@@ -18,7 +18,6 @@
 @keyframes puff{0%{transform:translate(0,0) scale(.3);opacity:1}100%{transform:translate(var(--dx),var(--dy)) scale(var(--s));opacity:0}}
 .dot{width:14px;height:14px;border-radius:50%;border:2px solid #171310;transition:background .2s}
 .dot-on{background:#B3202B;border-color:#B3202B}
-.intro-skip{position:absolute;right:20px;bottom:20px;z-index:6;background:rgba(244,234,218,.85);border:0;border-radius:999px;padding:12px 18px;min-height:44px;font:600 14px var(--tk-f-sans);cursor:pointer;color:#171310}
 {%- endstyle -%}
 <tk-intro{% if request.design_mode %} data-editor{% endif %}>
   <section class="intro" aria-label="The ritual: press the nozzle three times to enter" data-intro>
@@ -35,7 +34,6 @@
         <button type="button" class="nozzle" aria-label="Press the nozzle"></button>
         {%- render 'tk-bottle', act_cls: 'bottle-act', body_cls: 'bottle-body', alt: 'TEKILA Anxiety bottle', w: 800 -%}
       </div>
-      <button type="button" class="intro-skip" data-skip>Skip</button>
     </div>
   </section>
 </tk-intro>
@@ -44,7 +42,7 @@
     var el = document.currentScript.previousElementSibling;
     var seen = false; try { seen = !!localStorage.getItem('tk-intro-seen'); } catch (e) {}
     if (seen && !el.hasAttribute('data-editor')) { el.hidden = true; document.documentElement.classList.remove('tk-intro-on'); return; }
-    /* While the intro runs the page can't scroll: only the nozzle (3 presses) or Skip lets you in. */
+    /* While the intro runs the page can't scroll: only the nozzle (3 presses) lets you in. No skip. */
     var root = document.documentElement;
     if (!root.classList.contains('tk-intro-on')) return;
     try { history.scrollRestoration = 'manual'; } catch (e) {}
@@ -71,7 +69,7 @@
         setTimeout(function () { self.hidden = true; var m = document.getElementById('MainContent'); if (m) m.focus({ preventScroll: true }); }, 950);
       };
       this.querySelector('.nozzle').addEventListener('click', function () {
-        if (done) return;
+        if (done || n >= 3) return;   // capped at 3, however fast it is tapped
         if (window.TK) TK.psst();
         n++; out.textContent = n;
         dots.forEach(function (d, i) { d.classList.toggle('dot-on', i < n); });
@@ -87,7 +85,6 @@
         }
         if (n >= 3) setTimeout(reveal, 650);
       });
-      this.querySelector('[data-skip]').addEventListener('click', function () { if (window.TK) TK.audio(); reveal(); });
     }
   });
 </script>
@@ -96,7 +93,7 @@
 {
   "name": "TEKILA intro",
   "settings": [
-    { "type": "paragraph", "content": "Shows on a visitor's first visit only. Press the nozzle three times (or Skip) to enter." },
+    { "type": "paragraph", "content": "Shows on a visitor's first visit only. Press the nozzle three times to enter (no skip)." },
     { "type": "text", "id": "heading_a", "label": "Heading", "default": "Three sprays." },
     { "type": "text", "id": "heading_b", "label": "Heading, serif", "default": "Then you go." },
     { "type": "text", "id": "text", "label": "Text", "default": "Press the nozzle three times to enter." }
