@@ -61,14 +61,14 @@
         "subline": "Reviews filmed inside our strangers gatherings. No friends, no plus-ones. Just strangers and TEKILA."
       }
     },
-    "choose": {
-      "type": "tk-choose-box",
+    "pick": {
+      "type": "tk-pick",
       "settings": {
         "product": "tekila-anxiety",
-        "subline": "Every bottle is made after you reserve it.",
-        "upgrade": "Start with the Ritual. Upgrade to the Passport for <strong>700 EGP</strong> anytime before 31 Dec.",
+        "heading": "Pick your way in.",
         "window_line": "Window 1 closes 31 Dec",
-        "future_price": "2,900 EGP from 1 January 2027"
+        "upgrade_line": "Upgrade to the Passport for 700 EGP before 31 Dec",
+        "future_price": "2,900 from 1 Jan 2027"
       }
     },
     "batch": {
@@ -96,5 +96,5 @@
     },
     "sticky": { "type": "tk-sticky-bar", "settings": { "cta": "Reserve" } }
   },
-  "order": ["intro", "hero", "cartas", "ritual", "reviews", "choose", "batch", "unlock", "faq", "sticky"]
+  "order": ["intro", "hero", "cartas", "ritual", "reviews", "pick", "batch", "unlock", "faq", "sticky"]
 }

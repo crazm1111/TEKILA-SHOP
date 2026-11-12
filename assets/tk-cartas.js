@@ -157,14 +157,14 @@
       if (l.voice) {
         // Voice: nothing plays until the visitor presses play (5-second snippet, can pause and resume).
         this.snipSrc = l.src; this.snipLeft = 5000; this.snipStarted = false;
-        this.pq('[data-peek-label]').textContent = 'VOICE LETTER Nº ' + no + ' · SNIPPET';
+        this.pq('[data-peek-label]').textContent = 'Voice letter Nº ' + no + ' · snippet';
         this.pq('[data-peek-text]').textContent = 'Press play to hear the first 5 seconds.';
         this.pq('[data-peek-more]').textContent = 'Write your letter to hear it all.';
         this.pq('[data-peek-voice]').hidden = false;
         this.resetSnipBar(); this.snipIcon(false);
         this.peekT = setTimeout(function () { self.hidePeek(); }, 8000);
       } else {
-        this.pq('[data-peek-label]').textContent = 'CARTA Nº ' + no;
+        this.pq('[data-peek-label]').textContent = 'A snippet of letter Nº ' + no;
         this.pq('[data-peek-text]').textContent = middle(l.text);
         this.pq('[data-peek-more]').textContent = 'Write yours to read the rest.';
         this.pq('[data-peek-voice]').hidden = true;

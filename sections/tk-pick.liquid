@@ -1,0 +1,90 @@
+{{ 'tk-pick.css' | asset_url | stylesheet_tag }}
+<script src="{{ 'tk-pick.js' | asset_url }}" defer></script>
+{%- liquid
+  assign p = section.settings.product
+  if p == blank
+    assign p = all_products['tekila-anxiety']
+  endif
+  assign ritual_price = 180000
+  assign passport_price = 250000
+  for v in p.variants
+    assign t = v.title | downcase
+    if t contains 'passport'
+      assign passport_price = v.price
+    elsif t contains 'ritual'
+      assign ritual_price = v.price
+    endif
+  endfor
+  assign taken_count = 0
+  for n in p.metafields.tekila.taken_numbers.value
+    if n >= 101 and n <= 200
+      assign taken_count = taken_count | plus: 1
+    endif
+  endfor
+  assign left = 100 | minus: taken_count
+  assign base = p.url | default: '/products/tekila-anxiety'
+-%}
+<section id="reserve" class="pk" aria-labelledby="pk-h-{{ section.id }}" style="background: #D8C3A0; color: #171310; padding: 36px 20px 32px">
+  <tk-pick data-base="{{ base }}" style="max-width: 460px; width: 100%; margin: 0 auto; display: flex; flex-direction: column">
+    <h2 id="pk-h-{{ section.id }}" style="margin: 0 0 16px"><span class="y-wide" style="font-size: 30px; line-height: .9">{{ section.settings.heading }}</span></h2>
+
+    <div class="za-sw" role="radiogroup" aria-label="Choose the Ritual or the Passport">
+      <span class="za-knob za-knob-p" aria-hidden="true" data-knob></span>
+      <button type="button" role="radio" aria-checked="false" class="za-o" data-plan="ritual" tabindex="-1">Ritual</button>
+      <button type="button" role="radio" aria-checked="true" class="za-o" data-plan="passport">Passport</button>
+    </div>
+
+    <div class="za-wrap">
+      <div class="cb-scene" role="img" aria-label="The Passport box: bottle, letter, numbered passport, contract and gatherings invitation" data-scene>
+        <div class="cb-back"></div>
+        <div class="cb-flap cb-flap-shut" data-flap></div>
+        <div class="cb-item cb-contract" data-item="contract"><span class="cb-mono" style="font-size: 8px; font-weight: 600; letter-spacing: .1em">CONTRATO</span><span class="cb-rule"></span><span class="cb-rule"></span><span class="cb-rule" style="width: 70%"></span><span class="cb-rule"></span><span class="cb-rule" style="width: 55%"></span></div>
+        <div class="cb-item cb-card" data-item="card"><span class="cb-mono" style="font-size: 8px; font-weight: 600; letter-spacing: .1em">INVITACIÓN</span><span class="cb-wide" style="font-size: 12px; line-height: 1">Gatherings</span></div>
+        <div class="cb-item cb-letter" data-item="letter"><span class="cb-wax">T</span></div>
+        <div class="cb-item cb-pass" data-item="pass">
+          <span class="cb-mono" style="font-size: 8px; font-weight: 600; letter-spacing: .12em; opacity: .7">TEKILA · PASAPORTE</span>
+          <span class="cb-wide" style="font-size: 20px; line-height: 1; color: #E9A93C">Nº 1__</span>
+          <span style="margin-top: auto; font-size: 8px; opacity: .6" class="cb-mono">NAME</span>
+          <span style="font-size: 12px; font-weight: 700; line-height: 1.15">Your name</span>
+        </div>
+        <div class="cb-item cb-bottle" data-item="bottle">{%- render 'tk-bottle', w: 200 -%}</div>
+        <button type="button" class="cb-front" aria-label="Open the box" data-front><span class="cb-front-mark">Tekila</span><span class="cb-front-sub" data-boxsub>THE PASSPORT</span></button>
+      </div>
+    </div>
+
+    <ul class="za-list" aria-label="What you get">
+      <li class="za-li" data-pass-only><span class="za-tk" aria-hidden="true">✓</span><span class="y-hl">Seat at the monthly gatherings</span></li>
+      <li class="za-li" data-pass-only><span class="za-tk" aria-hidden="true">✓</span><span>TEKILA community on WhatsApp</span></li>
+      <li class="za-li" data-pass-only><span class="za-tk" aria-hidden="true">✓</span><span>Numbered passport + contract</span></li>
+      <li class="za-li" data-pass-only><span class="za-tk" aria-hidden="true">✓</span><span>Member prices, first access</span></li>
+      <li class="za-li"><span class="za-tk" aria-hidden="true">✓</span><span>Tekila Anxiety, 50 ml</span></li>
+      <li class="za-li"><span class="za-tk" aria-hidden="true">✓</span><span>A stranger’s sealed letter</span></li>
+    </ul>
+
+    <div style="display: flex; flex-direction: column; gap: 12px; margin-top: 22px; padding-top: 18px; border-top: 1.5px dashed rgba(23,19,16,.3)">
+      <span class="y-left" data-pass-show><b>{{ left }} of 100 left</b> · {{ section.settings.window_line }}</span>
+      <span class="y-left" style="font-weight: 600" data-rit-show hidden>{{ section.settings.upgrade_line }}</span>
+      <div style="display: flex; align-items: center; gap: 12px">
+        <span style="display: flex; flex-direction: column">
+          <span class="y-wide" style="font-size: 24px; line-height: 1; white-space: nowrap" data-price data-pass="{% render 'tk-price', cents: passport_price %}" data-rit="{% render 'tk-price', cents: ritual_price %}">{% render 'tk-price', cents: passport_price %}</span>
+          <span class="y-mono" style="font-size: 10px; opacity: .55; text-decoration: line-through" data-pass-show>{{ section.settings.future_price }}</span>
+        </span>
+        <a class="y-btn" href="{{ base }}?edition=passport" data-cta>Reserve the Passport</a>
+      </div>
+    </div>
+  </tk-pick>
+</section>
+
+{% schema %}
+{
+  "name": "TEKILA pick your way in",
+  "settings": [
+    { "type": "product", "id": "product", "label": "Product" },
+    { "type": "text", "id": "heading", "label": "Heading", "default": "Pick your way in." },
+    { "type": "text", "id": "window_line", "label": "Passport line", "default": "Window 1 closes 31 Dec" },
+    { "type": "text", "id": "upgrade_line", "label": "Ritual line", "default": "Upgrade to the Passport for 700 EGP before 31 Dec" },
+    { "type": "text", "id": "future_price", "label": "Future Passport price (struck through)", "default": "2,900 from 1 Jan 2027" }
+  ],
+  "presets": [{ "name": "TEKILA pick your way in" }]
+}
+{% endschema %}
