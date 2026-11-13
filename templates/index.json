@@ -114,6 +114,7 @@
     },
     "unlock": {
       "type": "tk-unlock",
+      "disabled": true,
       "settings": {
         "heading": "ADHD and Nicotine unlock at Anxiety",
         "goal": 500,
@@ -127,49 +128,63 @@
           "type": "item",
           "settings": {
             "title": "Is it medicine?",
-            "body": "<p>No. It's a perfume and a ritual. It doesn't treat anxiety; it reminds you to be present before a heavy moment.</p>"
+            "body": "<p>No. It's a perfume and a ritual. It doesn't treat anxiety; it reminds you to be present before a heavy moment.</p>",
+            "link_label": "",
+            "link": ""
           }
         },
         "q2": {
           "type": "item",
           "settings": {
             "title": "When will it arrive?",
-            "body": "<p>Batches close every Thursday at 11:59 pm. Your bottle is made and aged after that, and arrives about 10 days later.</p>"
+            "body": "<p>Batches close every Thursday at 11:59 pm. Your bottle is made and aged after that, and arrives about 10 days later.</p>",
+            "link_label": "",
+            "link": ""
           }
         },
         "q3": {
           "type": "item",
           "settings": {
             "title": "Is delivery free?",
-            "body": "<p>Yes, across Cairo and Giza, by courier.</p>"
+            "body": "<p>Yes, across Cairo and Giza, by courier.</p>",
+            "link_label": "",
+            "link": ""
           }
         },
         "q4": {
           "type": "item",
           "settings": {
             "title": "How do I pay?",
-            "body": "<p>By InstaPay, within 24 hours of reserving. We confirm every order personally on WhatsApp.</p>"
+            "body": "<p>By InstaPay, within 24 hours of reserving. We confirm every order personally on WhatsApp.</p>",
+            "link_label": "",
+            "link": ""
           }
         },
         "q5": {
           "type": "item",
           "settings": {
             "title": "Can I cancel?",
-            "body": "<p>Every bottle is made for you after you reserve it, so all sales are final. If your bottle arrives broken or faulty, we replace it.</p>"
+            "body": "<p>Every bottle is made for you after you reserve it, so all sales are final. If your bottle arrives broken or faulty, we replace it.</p>",
+            "link_label": "",
+            "link": ""
           }
         },
         "q6": {
           "type": "item",
           "settings": {
             "title": "Can I gift it?",
-            "body": "<p>Yes. Add their name at checkout and it goes on the passport and contract, with your note.</p>"
+            "body": "<p>Yes. Add their name at checkout and it goes on the passport and contract, with your note.</p>",
+            "link_label": "",
+            "link": ""
           }
         },
         "q7": {
           "type": "item",
           "settings": {
             "title": "What do passport holders get?",
-            "body": "<p>The WhatsApp community, monthly gatherings, exclusive brand deals, first access to new drops, member prices and a stamp code for friends.</p>"
+            "body": "<p>The WhatsApp community, monthly gatherings, exclusive brand deals, first access to new drops, member prices and a stamp code for friends.</p>",
+            "link_label": "",
+            "link": ""
           }
         }
       },
