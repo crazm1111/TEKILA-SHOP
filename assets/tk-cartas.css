@@ -90,7 +90,6 @@
 .seat-box{background:#E9A93C;color:#171310;border:2px dashed rgba(23,19,16,.55);box-shadow:0 8px 20px rgba(23,19,16,.18)}
 .seat-box .seat-tk{border-color:#171310;color:#171310}
 /* the half-blurred letter overlay */
-html.cl-lock,html.cl-lock body{overflow:hidden}
 .cl-ov{position:fixed;inset:0;z-index:1000;background:rgba(14,11,9,0);transition:background .3s ease;display:block;overflow:hidden;font-family:var(--tk-f-sans);color:#171310}
 .cl-ov.cl-in{background:rgba(14,11,9,.78)}
 .cl-env{position:absolute;left:50%;top:42%;width:220px;height:146px;margin:-73px 0 0 -110px;border-radius:6px;background:#F4EADA;box-shadow:0 18px 40px rgba(0,0,0,.45);transition:transform .45s cubic-bezier(.3,1.1,.4,1),opacity .3s ease;transform-origin:center}

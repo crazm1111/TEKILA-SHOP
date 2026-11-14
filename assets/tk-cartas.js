@@ -158,7 +158,7 @@
       this.oq('[data-ov-label]').textContent = 'CARTA Nº ' + l.no;
       this.oq('[data-ov-slice]').textContent = slice(l.text);
       ov.className = 'cl-ov'; ov.hidden = false;
-      document.documentElement.classList.add('cl-lock');
+      this.lockPage(true);
       this.lastFocus = from;
       if (reduced()) { ov.classList.add('cl-in', 'cl-paper-on'); this.oq('[data-ov-close]').focus(); return; }
       // start the big envelope exactly where the tapped one sits, then fly it to the centre
@@ -172,9 +172,15 @@
       this.ovT1 = setTimeout(function () { ov.classList.add('cl-open'); sfx('thunk'); }, 480);
       this.ovT2 = setTimeout(function () { ov.classList.add('cl-paper-on'); self.oq('[data-ov-close]').focus({ preventScroll: true }); }, 820);
     }
+    /* Freeze the page behind the letter without it jumping (fixed body, restore the scroll after). */
+    lockPage(on) {
+      var b = document.body;
+      if (on) { if (this.lockY != null) return; this.lockY = window.scrollY; b.style.position = 'fixed'; b.style.top = -this.lockY + 'px'; b.style.left = '0'; b.style.right = '0'; }
+      else if (this.lockY != null) { var y = this.lockY; this.lockY = null; b.style.position = ''; b.style.top = ''; b.style.left = ''; b.style.right = ''; window.scrollTo(0, y); }
+    }
     closeLetter(silent) {
       var ov = this.ov; clearTimeout(this.ovT1); clearTimeout(this.ovT2);
-      ov.classList.remove('cl-in', 'cl-open', 'cl-paper-on'); document.documentElement.classList.remove('cl-lock');
+      ov.classList.remove('cl-in', 'cl-open', 'cl-paper-on'); this.lockPage(false);
       setTimeout(function () { ov.hidden = true; }, reduced() ? 0 : 250);
       if (!silent && this.lastFocus) try { this.lastFocus.focus({ preventScroll: true }); } catch (e) {}
     }
