@@ -7,7 +7,7 @@
 {%- endstyle -%}
 <tk-sbar class="sbar" role="region" aria-label="Reserve">
   <span class="mono" style="font-size: 12px; line-height: 1.3"><span style="opacity: .7">Batch <tk-time format="batch">01</tk-time> closes in</span><br><strong style="font-size: 14px"><tk-time format="short">Thursday</tk-time></strong></span>
-  <a href="#reserve">{{ section.settings.cta }}</a>
+  <a href="#reserve" data-track="sticky_reserve">{{ section.settings.cta }}</a>
 </tk-sbar>
 <script>
   if (!customElements.get('tk-sbar')) customElements.define('tk-sbar', class extends HTMLElement {

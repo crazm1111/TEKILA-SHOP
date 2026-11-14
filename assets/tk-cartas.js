@@ -1,5 +1,7 @@
-/* Cartas: a bag of sealed letters. Write one (stored as Pending in the Cartas Google Sheet via its
-   Apps Script web app), then open one and stamp it. The sheet's Status column decides what is shown. */
+/* Cartas: real letters from strangers who got anxious (stored in the Cartas Google Sheet via its
+   Apps Script web app; the sheet's Status column decides what is shown).
+   Tap a letter: the envelope opens and the paper fills the screen with only a slice from the middle
+   readable. Write and seal your own letter to read every letter in full and stamp it. */
 (function () {
   'use strict';
   if (customElements.get('tk-cartas')) return;
@@ -14,16 +16,18 @@
   var ss = function (k, v) { try { if (v === undefined) return sessionStorage.getItem(k); if (v === null) sessionStorage.removeItem(k); else sessionStorage.setItem(k, v); } catch (e) { return null; } };
   var ls = function (k, v) { try { if (v === undefined) return localStorage.getItem(k); localStorage.setItem(k, v); } catch (e) { return null; } };
   var sfx = function (fn) { if (window.TK && TK[fn]) TK[fn](); };
-  /* A short slice from the middle of a letter for the snippet: about 7 words, at most ~55 characters. */
-  var middle = function (text) {
+  var track = function (n) { if (window.TK && TK.track) TK.track(n); };
+  var reduced = function () { return !!(window.TK && TK.reduced()); };
+  /* The readable slice in the half-blurred letter: about 2-3 lines from the middle (max ~140 characters). */
+  var slice = function (text) {
     var w = String(text || '').replace(/\s+/g, ' ').trim().split(' ').filter(Boolean);
     if (!w.length) return '…';
-    var n = Math.min(7, w.length), start = Math.max(0, Math.floor((w.length - n) / 2)), frag = w.slice(start, start + n);
-    while (frag.length > 3 && frag.join(' ').length > 55) frag.pop();
-    var s = frag.join(' '); if (s.length > 55) s = s.slice(0, 54);
+    var n = Math.min(24, w.length), start = Math.max(0, Math.floor((w.length - n) / 2)), frag = w.slice(start, start + n);
+    while (frag.length > 6 && frag.join(' ').length > 140) frag.pop();
+    var s = frag.join(' '); if (s.length > 140) s = s.slice(0, 139);
     return '…' + s.replace(/[.,;:!?]+$/, '') + '…';
   };
-  var toLetter = function (l) { return { no: pad(l.number), voice: l.type === 'voice', src: l.audio || '', text: l.text || '', stamps: l.stamps || {} }; };
+  var toLetter = function (l) { return { no: pad(l.number), text: l.text || '', stamps: l.stamps || {} }; };
   /* Backend calls. Apps Script URLs (script.google.com/.../exec) take ?action= and text/plain JSON
      posts (no CORS preflight); any other URL is treated as the older REST worker. */
   var api = function (base, action, data) {
@@ -42,30 +46,28 @@
       this.shown = parseInt(this.dataset.shown || '20', 10);
       this.q = function (s) { return self.querySelector(s); };
       this.qa = function (s) { return Array.prototype.slice.call(self.querySelectorAll(s)); };
-      this.audio = this.q('[data-audio]');
       this.letters = [];
       this.mine = ss('tk-carta-mine') || '';
-      this.credits = parseInt(ss('tk-carta-credit') || '0', 10) || 0;
       this.pos = {};
       try { this.stamped = JSON.parse(ls('tk-stamped') || '{}'); } catch (e) { this.stamped = {}; }
-      var fallback = []; try { fallback = JSON.parse(this.q('[data-voices]').textContent); } catch (e) {}
-      this.fallback = fallback.filter(function (v) { return v.src; }).map(function (v) { return { no: pad(v.number), voice: true, src: v.src, text: '', stamps: {}, fallback: true }; });
 
-      this.peekEl = this.q('[data-peek]');
-      document.body.appendChild(this.peekEl);
-      this.pq = function (s) { return self.peekEl.querySelector(s); };
-      this.pq('[data-peek-play]').addEventListener('click', function () { if (self.snipOn) self.pauseSnip(); else self.playSnip(); });
+      // the letter overlay lives on <body> so position:fixed covers the whole screen
+      this.ov = this.q('[data-ov]'); document.body.appendChild(this.ov);
+      this.oq = function (s) { return self.ov.querySelector(s); };
+      this.oq('[data-ov-close]').addEventListener('click', function () { self.closeLetter(); });
+      this.oq('[data-ov-write]').addEventListener('click', function () { track('letter_gate_tap'); self.closeLetter(true); self.write(); });
+      this.ov.addEventListener('click', function (e) { if (e.target === self.ov) self.closeLetter(); });
+      document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && !self.ov.hidden) self.closeLetter(); });
+
       this.bindWrite();
-      this.bindOpen();
-      var write = function () { self.stopAudio(); self.hidePeek(); self.go('write'); var t = self.q('[data-text]'); setTimeout(function () { t.focus(); }, 50); };
-      this.q('[data-start]').addEventListener('click', write);
-      this.q('[data-seat]').addEventListener('click', write);
-      this.q('[data-back-bag]').addEventListener('click', function () { self.stopAudio(); self.go('bag'); });
-      document.addEventListener('tk:sound', function (e) { if (e.detail.owner !== self.audio) self.stopAudio(); });
-      document.addEventListener('tk:mute', function (e) { if (e.detail.muted) self.stopAudio(); });
+      this.q('[data-stamp-open]').addEventListener('click', function () { self.renderStamps('pick'); var f = self.q('.sb'); if (f) f.focus(); });
+      this.q('[data-start]').addEventListener('click', function () { track('letter_write_tap'); self.write(); });
+      this.q('[data-back-bag]').addEventListener('click', function () { self.go('bag'); });
       this.load();
       this.go('bag');
     }
+    unlocked() { return !!this.mine || ls('tk-carta-wrote') === '1'; }
+    write() { this.go('write'); var t = this.q('[data-text]'); this.q('[data-scene="write"]').scrollIntoView({ block: 'start', behavior: reduced() ? 'auto' : 'smooth' }); setTimeout(function () { t.focus({ preventScroll: true }); }, 400); }
 
     /* ---------- data ---------- */
     async load() {
@@ -82,13 +84,7 @@
       } catch (e) {}
     }
     setLetters(raw) {
-      var list = raw.map(toLetter);
-      if (!list.some(function (l) { return l.voice; })) {
-        // Sample voice letters fill the bag until real ones exist; a real letter with the same number wins.
-        var taken = {}; list.forEach(function (l) { taken[l.no] = 1; });
-        list = this.fallback.filter(function (f) { return !taken[f.no]; }).concat(list);
-      }
-      this.letters = list.slice(0, this.shown);
+      this.letters = raw.filter(function (l) { return l.type !== 'voice' && l.text; }).map(toLetter).slice(0, this.shown);
       this.renderBag();
     }
     find(no) { for (var i = 0; i < this.letters.length; i++) if (this.letters[i].no === no) return this.letters[i]; return null; }
@@ -100,15 +96,15 @@
       if (step === 'bag') this.renderBagChrome();
     }
     renderBagChrome() {
-      this.q('[data-bagline]').textContent = this.credits > 0 ? 'Your letter is in. Now pick any letter and open it.' : 'Strangers sealed their heaviest moment in here. Leave yours, open any one you like.';
-      this.q('[data-seat]').hidden = !!this.mine;
-      this.q('[data-hint]').hidden = !(this.credits > 0);
-      this.q('[data-start]').hidden = this.credits > 0;
-      this.qa('.env').forEach(function (e) { e.classList.toggle('env-ready', this.credits > 0 && e.dataset.no !== this.mine); this.ariaEnv(e); }, this);
-    }
-    ariaEnv(e) {
-      var no = e.dataset.no, mine = no === this.mine, l = this.find(no);
-      e.setAttribute('aria-label', (mine ? 'Your letter ' : 'Letter ') + no + (l && l.voice ? ', voice' : '') + (this.credits > 0 && !mine ? '. Press to open.' : '. Press for a taste.'));
+      var open = this.unlocked();
+      this.q('[data-bagline]').hidden = !open;
+      this.q('[data-hint]').textContent = open ? 'Tap any letter to read it in full' : 'Tap a letter to read it';
+      this.q('[data-start]').hidden = !!this.mine;
+      this.qa('.env').forEach(function (e) {
+        var no = e.dataset.no, mine = no === this.mine;
+        e.classList.toggle('env-ready', open && !mine);
+        e.setAttribute('aria-label', (mine ? 'Your letter ' : 'Letter ') + no + (mine ? '' : '. Press to read.'));
+      }, this);
     }
 
     /* ---------- the bag ---------- */
@@ -119,13 +115,13 @@
       if (this.mine && list.indexOf(this.mine) < 0) list.push(this.mine);
       var W = Math.max(200, bag.clientWidth || 350), H = 360;
       list.forEach(function (no, k) {
-        var l = self.find(no), mine = no === self.mine;
-        var p = self.pos[no] || (mine ? { x: Math.round(W / 2 - 50), y: 140, r: -4, z: 150 } : { x: Math.round(6 + rnd(k + 1) * (W - 112)), y: Math.round(18 + rnd(k + 40) * (H - 96)), r: Math.round(-26 + rnd(k + 90) * 52) });
+        var mine = no === self.mine;
+        var p = self.pos[no] || (mine ? { x: Math.round(W / 2 - 50), y: 140, r: -4, z: 150 } : { x: Math.round(6 + rnd(k + 1) * (W - 112)), y: Math.round(18 + rnd(k + 40) * (H - 110)), r: Math.round(-26 + rnd(k + 90) * 52) });
         self.pos[no] = p;
         var b = document.createElement('button');
         b.type = 'button'; b.className = 'env' + (mine ? ' env-mine' : ' drift'); b.dataset.no = no;
         b.style.cssText = 'left:' + p.x + 'px;top:' + p.y + 'px;transform:rotate(' + p.r + 'deg);z-index:' + (p.z || k) + ';animation-delay:' + (rnd(k + 7) * -6).toFixed(2) + 's';
-        b.innerHTML = '<span class="wax">T</span><span class="no">Nº ' + no + '</span>' + (l && l.voice ? '<span class="vo" aria-hidden="true"><i style="height:40%"></i><i style="height:100%"></i><i style="height:60%"></i><i style="height:80%"></i></span>' : '');
+        b.innerHTML = '<span class="wax">T</span><span class="no">Nº ' + no + '</span>';
         self.drag(b, W, H);
         b.addEventListener('click', function () { if (b.__moved) { b.__moved = false; return; } self.tap(no, b); });
         bag.appendChild(b);
@@ -146,71 +142,42 @@
       b.addEventListener('pointerup', end); b.addEventListener('pointercancel', end);
     }
     tap(no, b) {
-      var l = this.find(no), toast = this.q('[data-toast]'), self = this;
+      var l = this.find(no), toast = this.q('[data-toast]');
       toast.textContent = '';
       if (no === this.mine) { toast.textContent = 'That one’s yours.'; return; }
-      if (this.credits > 0 && l) { this.stopAudio(); this.hidePeek(); this.credits--; ss('tk-carta-credit', String(this.credits)); this.open(l); return; }
       if (!l) return;
-      clearTimeout(this.peekT); this.stopAudio();
-      var peek = this.peekEl;
-      peek.hidden = false;
-      if (l.voice) {
-        // Voice: nothing plays until the visitor presses play (5-second snippet, can pause and resume).
-        this.snipSrc = l.src; this.snipLeft = 5000; this.snipStarted = false;
-        this.pq('[data-peek-label]').textContent = 'Voice letter Nº ' + no + ' · snippet';
-        this.pq('[data-peek-text]').textContent = 'Press play to hear the first 5 seconds.';
-        this.pq('[data-peek-more]').textContent = 'Write your letter to hear it all.';
-        this.pq('[data-peek-voice]').hidden = false;
-        this.resetSnipBar(); this.snipIcon(false);
-        this.peekT = setTimeout(function () { self.hidePeek(); }, 8000);
-      } else {
-        this.pq('[data-peek-label]').textContent = 'A snippet of letter Nº ' + no;
-        this.pq('[data-peek-text]').textContent = middle(l.text);
-        this.pq('[data-peek-more]').textContent = 'Write yours to read the rest.';
-        this.pq('[data-peek-voice]').hidden = true;
-        b.classList.add('env-shake'); setTimeout(function () { b.classList.remove('env-shake'); }, 400);
-        this.peekT = setTimeout(function () { self.hidePeek(); }, 3500);
-      }
+      track('letter_open');
+      if (this.unlocked()) { this.open(l); return; }
+      this.openLetter(l, b);
     }
-    hidePeek() { clearTimeout(this.peekT); if (this.snipOn) this.pauseSnip(); if (this.peekEl) this.peekEl.hidden = true; }
-    resetSnipBar() { var i = this.pq('[data-snip]').firstElementChild; i.className = ''; void i.offsetWidth; i.className = 'snip-run snip-paused'; }
-    snipIcon(on) {
-      this.pq('[data-pp-play]').hidden = on; this.pq('[data-pp-pause]').hidden = !on;
-      this.pq('[data-peek-play]').setAttribute('aria-label', on ? 'Pause the snippet' : 'Play the snippet');
+
+    /* ---------- the half-blurred letter: envelope rises, opens, paper fills the screen ---------- */
+    openLetter(l, from) {
+      var self = this, ov = this.ov, env = this.oq('[data-ov-env]'), paper = this.oq('[data-ov-paper]');
+      clearTimeout(this.ovT1); clearTimeout(this.ovT2);
+      this.oq('[data-ov-label]').textContent = 'CARTA Nº ' + l.no;
+      this.oq('[data-ov-slice]').textContent = slice(l.text);
+      ov.className = 'cl-ov'; ov.hidden = false;
+      document.documentElement.classList.add('cl-lock');
+      this.lastFocus = from;
+      if (reduced()) { ov.classList.add('cl-in', 'cl-paper-on'); this.oq('[data-ov-close]').focus(); return; }
+      // start the big envelope exactly where the tapped one sits, then fly it to the centre
+      var r = from.getBoundingClientRect(), W = 220, H = 146;
+      var cx = innerWidth / 2, cy = innerHeight * 0.42;
+      env.style.transition = 'none';
+      env.style.transform = 'translate(' + Math.round(r.left + r.width / 2 - cx) + 'px,' + Math.round(r.top + r.height / 2 - cy) + 'px) scale(' + (r.width / W).toFixed(3) + ')';
+      void env.offsetWidth;
+      env.style.transition = '';
+      requestAnimationFrame(function () { ov.classList.add('cl-in'); env.style.transform = ''; });
+      this.ovT1 = setTimeout(function () { ov.classList.add('cl-open'); sfx('thunk'); }, 480);
+      this.ovT2 = setTimeout(function () { ov.classList.add('cl-paper-on'); self.oq('[data-ov-close]').focus({ preventScroll: true }); }, 820);
     }
-    playSnip() {
-      var self = this, a = this.audio; if (!a || !this.snipSrc) return;
-      clearTimeout(this.peekT);
-      if (this.snipLeft <= 0) { this.snipLeft = 5000; this.snipStarted = false; this.resetSnipBar(); }
-      if (window.TK) { TK.claimSound(a); if (TK.muted) TK.setMuted(false); }
-      if (a.getAttribute('src') !== this.snipSrc) a.src = this.snipSrc;
-      if (!this.snipStarted) a.currentTime = 0;
-      this.snipStarted = true; a.muted = false; window.TK ? TK.play(a) : a.play();
-      this.snipOn = true; this.snipAt = Date.now(); this.snipIcon(true);
-      this.pq('[data-snip]').firstElementChild.classList.remove('snip-paused');
-      this.pq('[data-peek-text]').textContent = 'Listening…';
-      this.tasteT = setTimeout(function () {
-        self.pauseSnip(); self.snipLeft = 0;
-        self.pq('[data-peek-text]').textContent = 'That’s just a snippet.';
-        self.peekT = setTimeout(function () { self.hidePeek(); }, 3500);
-      }, this.snipLeft);
+    closeLetter(silent) {
+      var ov = this.ov; clearTimeout(this.ovT1); clearTimeout(this.ovT2);
+      ov.classList.remove('cl-in', 'cl-open', 'cl-paper-on'); document.documentElement.classList.remove('cl-lock');
+      setTimeout(function () { ov.hidden = true; }, reduced() ? 0 : 250);
+      if (!silent && this.lastFocus) try { this.lastFocus.focus({ preventScroll: true }); } catch (e) {}
     }
-    pauseSnip() {
-      if (!this.snipOn) return;
-      this.snipOn = false; clearTimeout(this.tasteT);
-      this.snipLeft = Math.max(0, this.snipLeft - (Date.now() - this.snipAt));
-      if (this.audio && !this.audio.paused) this.audio.pause();
-      this.pq('[data-snip]').firstElementChild.classList.add('snip-paused');
-      this.snipIcon(false);
-      if (this.snipLeft > 0) this.pq('[data-peek-text]').textContent = 'Paused.';
-    }
-    playAudio(src) {
-      var a = this.audio; if (!a || !src) return;
-      if (window.TK) { TK.claimSound(a); if (TK.muted) TK.setMuted(false); }
-      if (a.getAttribute('src') !== src) a.src = src;
-      a.currentTime = 0; a.muted = false; window.TK ? TK.play(a) : a.play();
-    }
-    stopAudio() { if (this.snipOn) this.pauseSnip(); clearTimeout(this.tasteT); if (this.audio && !this.audio.paused) this.audio.pause(); this.setPlaying(false); }
 
     /* ---------- write + seal ---------- */
     bindWrite() {
@@ -256,39 +223,20 @@
       this.go('sealing');
       setTimeout(function () { sfx('thunk'); }, 380);
       setTimeout(function () {
-        self.credits++; ss('tk-carta-credit', String(self.credits));
+        ls('tk-carta-wrote', '1'); track('letter_sealed');
         self.q('[data-text]').value = '';
         self.renderBag(); self.go('bag');
       }, (window.TK && TK.reduced()) ? 900 : 2300);
     }
 
-    /* ---------- open + stamps ---------- */
-    bindOpen() {
-      var self = this;
-      this.q('[data-play]').addEventListener('click', function () {
-        var a = self.audio;
-        if (self.playing) { a.pause(); self.setPlaying(false); return; }
-        self.playAudio(self.opened.src); self.setPlaying(true);
-      });
-      this.audio.addEventListener('ended', function () { self.setPlaying(false); });
-      this.q('[data-stamp-open]').addEventListener('click', function () { self.renderStamps('pick'); var f = self.q('.sb'); if (f) f.focus(); });
-    }
-    setPlaying(on) {
-      this.playing = on;
-      var p = this.q('[data-play]'); if (!p) return;
-      p.setAttribute('aria-label', on ? 'Pause the voice letter' : 'Play the voice letter');
-      this.q('[data-i-play]').hidden = on; this.q('[data-i-pause]').hidden = !on;
-      this.q('[data-wave]').className = 'wave' + (on ? ' wave-on' : '');
-    }
+    /* ---------- open in full + stamps ---------- */
     count(l, id) { return (l.stamps && +l.stamps[id]) || 0; }
     open(l) {
       this.opened = l;
-      this.q('[data-open-label]').textContent = (l.voice ? 'VOICE LETTER Nº ' : 'CARTA Nº ') + l.no;
-      this.q('[data-voice-row]').hidden = !l.voice;
-      var t = this.q('[data-open-text]'); t.hidden = l.voice; t.textContent = l.text || '';
+      this.q('[data-open-label]').textContent = 'CARTA Nº ' + l.no;
+      this.q('[data-open-text]').textContent = l.text || '';
       this.qa('[data-open-paper] .stamp-sm').forEach(function (s) { s.remove(); });
       this.qa('[data-myno]').forEach(function (s) { s.textContent = this.mine; }, this);
-      this.setPlaying(false);
       this.renderStamps(this.stamped[l.no] ? 'done' : 'idle');
       this.go('open');
       this.q('[data-open-label]').scrollIntoView({ block: 'nearest' });
@@ -332,7 +280,7 @@
       l.stamps = l.stamps || {}; l.stamps[s.id] = this.count(l, s.id) + 1;
       this.stamped[l.no] = s.id; ls('tk-stamped', JSON.stringify(this.stamped));
       this.renderStamps('done');
-      if (this.worker && !l.fallback) {
+      if (this.worker) {
         api(this.worker, 'stamp', { number: parseInt(l.no, 10), type: s.id }).catch(function () {});
       }
     }

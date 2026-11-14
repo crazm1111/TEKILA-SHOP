@@ -10,14 +10,6 @@
 {
   "layout": "tekila",
   "sections": {
-    "intro": {
-      "type": "tk-intro",
-      "settings": {
-        "heading_a": "Three sprays.",
-        "heading_b": "Then you go.",
-        "text": "Press the nozzle three times to enter."
-      }
-    },
     "hero": {
       "type": "tk-hero",
       "settings": {
@@ -30,60 +22,35 @@
         "card_title": "Passports 101–200",
         "card_sub": "Window closes 31 Dec",
         "cta_1": "Reserve yours",
-        "cta_2": "How the ritual works"
+        "cta_2": "Try the ritual ↓"
       }
     },
     "cartas": {
       "type": "tk-cartas",
-      "blocks": {
-        "v1": {
-          "type": "voice",
-          "settings": {
-            "number": 1,
-            "audio": "phone-1.mp4"
-          }
-        },
-        "v2": {
-          "type": "voice",
-          "settings": {
-            "number": 2,
-            "audio": "phone-2.mp4"
-          }
-        },
-        "v3": {
-          "type": "voice",
-          "settings": {
-            "number": 3,
-            "audio": "phone-3.mp4"
-          }
-        },
-        "v4": {
-          "type": "voice",
-          "settings": {
-            "number": 4,
-            "audio": "phone-4.mp4"
-          }
-        }
-      },
-      "block_order": [
-        "v1",
-        "v2",
-        "v3",
-        "v4"
-      ],
       "settings": {
+        "heading_a": "Real letters from strangers",
+        "heading_b": "who got anxious.",
+        "seat_line": "🎟 The best letter each month wins a free seat at our next Gathering.",
+        "gate_cta": "Tell us your anxious moment to read it all",
         "worker_url": "https://script.google.com/macros/s/AKfycbwIpLbOsShwKXNP1urmNBemKzjta3nyo9SLs-qa4U23uyYT1duN-eFSi7Xex-HLqlyR/exec",
-        "shown": 20,
-        "seat_line": "Best letter each month wins a seat at our next"
+        "shown": 20
       }
     },
     "ritual": {
       "type": "tk-ritual-deck",
       "settings": {
-        "intro": "Three steps. The same three, every time, until your body knows the way.",
+        "heading_a": "What is TEKILA",
+        "heading_b": "Anxiety?",
+        "intro": "A 30-second ritual for your heavy moments. Try it.",
         "moments": "Before the room.|Before the date.|Before the call.|Before the presentation.",
-        "img_splash": "img-3.jpg",
-        "img_go": "img-8.jpg"
+        "img_go": "img-8.jpg",
+        "gather_file": "gather-compilation.mp4",
+        "gather_poster_file": "gather-compilation.jpg",
+        "gather_line": "Every month, a room full of strangers.",
+        "seat_cta": "Win a free seat at the next Gathering ↓",
+        "seat_sub": "Best letter each month wins.",
+        "ritual_line": "The bottle and a stranger’s sealed letter.",
+        "passport_line": "Plus a seat at every gathering, the community and your numbered passport."
       }
     },
     "reviews": {
@@ -102,22 +69,6 @@
         "window_line": "Window 1 closes 31 Dec",
         "upgrade_line": "Upgrade to the Passport for 700 EGP before 31 Dec",
         "future_price": "2,900 from 1 Jan 2027"
-      }
-    },
-    "batch": {
-      "type": "tk-batch",
-      "settings": {
-        "heading_a": "Good things",
-        "heading_b": "take time.",
-        "text": "We don't keep stock. Every Thursday we make one small batch and let it rest for ten days, until the scent settles. Then it's yours."
-      }
-    },
-    "unlock": {
-      "type": "tk-unlock",
-      "settings": {
-        "heading": "ADHD and Nicotine unlock at Anxiety",
-        "goal": 500,
-        "low_threshold": 250
       }
     },
     "faq": {
@@ -195,14 +146,11 @@
     }
   },
   "order": [
-    "intro",
     "hero",
-    "cartas",
     "ritual",
+    "cartas",
     "reviews",
     "pick",
-    "batch",
-    "unlock",
     "faq",
     "sticky"
   ]
