@@ -180,8 +180,30 @@
       {%- comment -%} 4. Not alone: the gatherings + free seat {%- endcomment -%}
       <div class="rd-card" role="group" aria-roledescription="slide" aria-label="4 of 4: Not alone" aria-hidden="true">
         <div class="rd-inner">
-          <video class="rd-video" muted playsinline loop preload="none" data-tk-loop
-            data-src="{%- render 'tk-media', file: section.settings.gather_video, name: section.settings.gather_file -%}"
+          {%- liquid
+            assign clips = ''
+            if section.settings.gather_video != blank
+              capture one
+                render 'tk-media', file: section.settings.gather_video
+              endcapture
+              assign clips = one | strip
+            else
+              assign names = section.settings.gather_clips | default: section.settings.gather_file | split: ','
+              for n in names
+                assign nm = n | strip
+                if nm != blank
+                  capture u
+                    render 'tk-src', f: nm
+                  endcapture
+                  assign clips = clips | append: u | strip | append: '|'
+                endif
+              endfor
+            endif
+            assign playlist = clips | split: '|'
+          -%}
+          <script type="application/json" data-playlist>{{ playlist | json }}</script>
+          <video class="rd-video" muted playsinline {% if playlist.size < 2 %}loop {% endif %}preload="none" data-tk-loop
+            data-src="{{ playlist.first }}"
             poster="{%- if section.settings.gather_poster != blank -%}{%- render 'tk-media', file: section.settings.gather_poster, want: 'poster', w: 900 -%}{%- elsif section.settings.gather_video != blank -%}{%- render 'tk-media', file: section.settings.gather_video, want: 'poster', w: 900 -%}{%- else -%}{%- render 'tk-src', f: section.settings.gather_poster_file, w: 900 -%}{%- endif -%}"
             aria-label="A TEKILA gathering"></video>
           <div class="rd-shade"></div>
@@ -308,8 +330,16 @@
       };
       core.addEventListener('click', function () { if (swiped) { swiped = false; return; } breathe(); });
 
-      /* 4. Gathering video sound */
+      /* 4. Gathering video: plays its clips one after another (with their sound when turned on) */
       var snd = this.querySelector('[data-snd]'), gv = cards[3] && cards[3].querySelector('video');
+      var list = []; try { list = JSON.parse(this.querySelector('[data-playlist]').textContent).filter(Boolean); } catch (e) {}
+      if (gv && list.length > 1) {
+        var ci = 0;
+        gv.addEventListener('ended', function () {
+          ci = (ci + 1) % list.length; gv.dataset.src = list[ci]; gv.src = list[ci];
+          if (i === 3) window.TK ? TK.play(gv) : gv.play();
+        });
+      }
       if (snd && gv) {
         var syncSnd = function () { var on = !gv.muted; snd.setAttribute('aria-pressed', on ? 'true' : 'false'); snd.setAttribute('aria-label', on ? 'Mute' : 'Turn sound on'); };
         snd.addEventListener('click', function () {
@@ -377,7 +407,8 @@
     { "type": "header", "content": "Card 4: Not alone" },
     { "type": "video", "id": "gather_video", "label": "Gathering video" },
     { "type": "image_picker", "id": "gather_poster", "label": "Cover image (optional)" },
-    { "type": "text", "id": "gather_file", "label": "Older video file name (used only if no video is chosen above)", "default": "gather-compilation.mp4" },
+    { "type": "text", "id": "gather_clips", "label": "Or: clips from Content → Files, played one after another (file names, comma-separated)", "default": "gather-2.mp4, gather-3.mp4, gather-4.mp4, gather-5.mp4, gather-1.mp4", "info": "Used when no video is chosen above. Use videos that have sound: the sound button plays their audio." },
+    { "type": "text", "id": "gather_file", "label": "Older single file name (used only if both fields above are empty)", "default": "gather-compilation.mp4" },
     { "type": "text", "id": "gather_poster_file", "label": "Older cover file name", "default": "gather-compilation.jpg" },
     { "type": "text", "id": "gather_line", "label": "Line", "default": "Every month, a room full of strangers." },
     { "type": "text", "id": "seat_cta", "label": "Free seat button", "default": "Win a free seat at the next Gathering ↓" }

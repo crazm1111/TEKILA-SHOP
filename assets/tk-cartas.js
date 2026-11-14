@@ -94,6 +94,9 @@
     go(step) {
       this.step = step;
       this.qa('[data-scene]').forEach(function (s) { s.hidden = s.dataset.scene !== step; });
+      // no sticky Reserve bar while writing/sealing, so it isn't mistaken for the Seal button
+      document.documentElement.classList.toggle('tk-no-sbar', step === 'write' || step === 'sealing');
+      document.dispatchEvent(new CustomEvent('tk:sbar'));
       if (step === 'bag') this.renderBagChrome();
     }
     renderBagChrome() {
