@@ -62,6 +62,7 @@
       this.bindWrite();
       this.q('[data-stamp-open]').addEventListener('click', function () { self.renderStamps('pick'); var f = self.q('.sb'); if (f) f.focus(); });
       this.q('[data-start]').addEventListener('click', function () { track('letter_write_tap'); self.write(); });
+      this.q('[data-seat]').addEventListener('click', function () { self.write(); });
       this.q('[data-back-bag]').addEventListener('click', function () { self.go('bag'); });
       this.load();
       this.go('bag');

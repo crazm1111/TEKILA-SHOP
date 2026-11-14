@@ -67,7 +67,9 @@
 @keyframes rdNope{25%{transform:translateX(-10px) rotate(-2deg)}75%{transform:translateX(10px) rotate(2deg)}}
 .rd-kraft{background:#D8C3A0;color:#171310}
 .rd-head{display:flex;flex-direction:column;gap:6px;padding:22px 22px 0;position:relative;z-index:2}
-.rd-do{display:inline-flex;align-items:center;gap:8px;align-self:flex-start;background:#171310;color:#F4EADA;border-radius:999px;padding:8px 14px;font:700 13px var(--tk-f-sans);animation:rdPulse 1.8s ease-in-out infinite}
+.rd-tap{position:absolute;left:50%;bottom:100%;margin-bottom:22px;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:2px;white-space:nowrap;font:800 14px var(--tk-f-sans);color:#B3202B;pointer-events:none;z-index:5;animation:rdBob 1.2s ease-in-out infinite;transition:opacity .25s}
+.rd-tap-off{opacity:0;animation:none}
+@keyframes rdBob{0%,100%{transform:translate(-50%,0)}50%{transform:translate(-50%,6px)}}
 @keyframes rdPulse{0%,100%{transform:scale(1)}50%{transform:scale(1.04)}}
 .rd-dots{display:flex;gap:8px;align-items:center}
 .rd-dot{width:14px;height:14px;border-radius:50%;border:2px solid #171310;transition:background .2s}
@@ -117,7 +119,7 @@
       <p style="margin: 0; font-size: 16px; line-height: 1.5; color: rgba(244,234,218,.8)">{{ section.settings.intro }}</p>
     </div>
 
-    <div class="rd-deck" data-deck role="group" aria-roledescription="carousel" aria-label="The ritual in five cards">
+    <div class="rd-deck" data-deck role="group" aria-roledescription="carousel" aria-label="The ritual in four cards">
       <div class="rd-end" data-end hidden>
         <p class="rd-wide" style="margin: 0; font-size: 28px; line-height: .95">That’s the ritual.</p>
         <p class="rd-serif" style="margin: 0; font-size: 22px; color: #E9A93C">Now pick your way in.</p>
@@ -126,30 +128,30 @@
       </div>
 
       {%- comment -%} 1. Splash: tap the nozzle 3 times (can't be swiped until done) {%- endcomment -%}
-      <div class="rd-card" role="group" aria-roledescription="slide" aria-label="1 of 5: Splash">
+      <div class="rd-card" role="group" aria-roledescription="slide" aria-label="1 of 4: Splash">
         <div class="rd-inner rd-kraft">
-          <span class="rd-num" style="background: rgba(23,19,16,.75)">01 / 05</span>
+          <span class="rd-num" style="background: rgba(23,19,16,.75)">01 / 04</span>
           <div class="rd-head" style="padding-top: 54px">
             <h3 class="rd-wide rd-ctitle" style="font-size: 50px">Splash.</h3>
             <p class="rd-cline" data-kicker>Before the room.</p>
-            <span class="rd-do" data-splash-do>Tap the nozzle 3 times</span>
             <div class="rd-dots" aria-live="polite"><span class="rd-dot"></span><span class="rd-dot"></span><span class="rd-dot"></span><span class="rd-mono mono" style="font-size: 13px; margin-left: 4px"><span data-splash-n>0</span> / 3</span></div>
           </div>
           <div class="rd-bottle" data-bottle>
-            <button type="button" class="rd-nozzle" data-nozzle aria-label="Press the nozzle"></button>
+            <span class="rd-tap" data-tap-hint aria-hidden="true">Tap the nozzle<svg width="18" height="22" viewBox="0 0 18 22" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 2v17M3 13l6 6 6-6"/></svg></span>
+            <button type="button" class="rd-nozzle" data-nozzle aria-label="Press the nozzle (3 times)"></button>
             {%- render 'tk-bottle', act_cls: 'rd-act', body_cls: 'rd-body', alt: 'TEKILA Anxiety bottle', w: 500 -%}
           </div>
         </div>
       </div>
 
       {%- comment -%} 2. Breathe {%- endcomment -%}
-      <div class="rd-card" role="group" aria-roledescription="slide" aria-label="2 of 5: Breathe" aria-hidden="true">
+      <div class="rd-card" role="group" aria-roledescription="slide" aria-label="2 of 4: Breathe" aria-hidden="true">
         <div class="rd-inner">
-          <span class="rd-num">02 / 05</span>
+          <span class="rd-num">02 / 04</span>
           <div class="rd-breath">
             <div class="rd-circwrap">
               <div class="rd-circ rd-circ-idle" data-circ></div>
-              <button type="button" class="rd-core rd-core-sm" data-core aria-label="Start three breaths" tabindex="-1">START</button>
+              <button type="button" class="rd-core rd-core-sm" data-core aria-label="Start one breath" tabindex="-1">START</button>
             </div>
             <p class="rd-phase" aria-live="polite" data-phase>Tap the circle <span></span></p>
           </div>
@@ -162,11 +164,11 @@
       </div>
 
       {%- comment -%} 3. Go {%- endcomment -%}
-      <div class="rd-card" role="group" aria-roledescription="slide" aria-label="3 of 5: Go" aria-hidden="true">
+      <div class="rd-card" role="group" aria-roledescription="slide" aria-label="3 of 4: Go" aria-hidden="true">
         <div class="rd-inner">
           <img class="rd-photo" src="{%- render 'tk-src', f: section.settings.img_go, w: 900 -%}" alt="A woman at a doorway, about to walk into a busy room" loading="lazy" width="900" height="1125">
           <div class="rd-shade"></div>
-          <span class="rd-num">03 / 05</span>
+          <span class="rd-num">03 / 04</span>
           <div class="rd-cbody">
             <h3 class="rd-wide rd-ctitle">Go.</h3>
             <p class="rd-cline">Walk in. Press call. Look up.</p>
@@ -176,14 +178,14 @@
       </div>
 
       {%- comment -%} 4. Not alone: the gatherings + free seat {%- endcomment -%}
-      <div class="rd-card" role="group" aria-roledescription="slide" aria-label="4 of 5: Not alone" aria-hidden="true">
+      <div class="rd-card" role="group" aria-roledescription="slide" aria-label="4 of 4: Not alone" aria-hidden="true">
         <div class="rd-inner">
           <video class="rd-video" muted playsinline loop preload="none" data-tk-loop
             data-src="{%- render 'tk-media', file: section.settings.gather_video, name: section.settings.gather_file -%}"
             poster="{%- if section.settings.gather_poster != blank -%}{%- render 'tk-media', file: section.settings.gather_poster, want: 'poster', w: 900 -%}{%- elsif section.settings.gather_video != blank -%}{%- render 'tk-media', file: section.settings.gather_video, want: 'poster', w: 900 -%}{%- else -%}{%- render 'tk-src', f: section.settings.gather_poster_file, w: 900 -%}{%- endif -%}"
             aria-label="A TEKILA gathering"></video>
           <div class="rd-shade"></div>
-          <span class="rd-num">04 / 05</span>
+          <span class="rd-num">04 / 04</span>
           <button type="button" class="rd-snd" aria-pressed="false" aria-label="Turn sound on" data-snd tabindex="-1">
             <svg class="tk-i-off" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 5 6 9H2v6h4l5 4z"></path><path d="m23 9-6 6"></path><path d="m17 9 6 6"></path></svg>
             <svg class="tk-i-on" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 5 6 9H2v6h4l5 4z"></path><path d="M15.5 8.5a5 5 0 0 1 0 7"></path></svg>
@@ -191,19 +193,8 @@
           <div class="rd-cbody">
             <h3 class="rd-wide rd-ctitle" style="font-size: 54px">Not alone.</h3>
             <p class="rd-cline">{{ section.settings.gather_line }}</p>
-            <a href="#cartas" class="rd-seat" data-seat-link data-track="deck_seat_tap" tabindex="-1"><span aria-hidden="true" style="font-size: 26px">🎟</span><span>{{ section.settings.seat_cta }}<small>{{ section.settings.seat_sub }}</small></span></a>
+            <a href="#cartas" class="rd-seat" data-seat-link data-track="deck_seat_tap" tabindex="-1"><span aria-hidden="true" style="font-size: 26px">🎟</span><span>{{ section.settings.seat_cta }}</span></a>
           </div>
-        </div>
-      </div>
-
-      {%- comment -%} 5. Two ways in {%- endcomment -%}
-      <div class="rd-card" role="group" aria-roledescription="slide" aria-label="5 of 5: Two ways in" aria-hidden="true">
-        <div class="rd-inner rd-cream" style="padding: 54px 22px 22px; gap: 14px">
-          <span class="rd-num" style="background: rgba(23,19,16,.75)">05 / 05</span>
-          <h3 class="rd-wide rd-ctitle" style="font-size: 48px">Two ways in.</h3>
-          <div class="rd-way"><div><b>The Ritual</b><p>{{ section.settings.ritual_line }}</p></div><span>{% render 'tk-price', cents: ritual_price %}</span></div>
-          <div class="rd-way"><div><b>The Passport</b><p>{{ section.settings.passport_line }}</p></div><span>{% render 'tk-price', cents: passport_price %}</span></div>
-          <a href="#reserve" class="rd-btn" data-track="deck_choose_tap" tabindex="-1">Choose yours ↓</a>
         </div>
       </div>
 
@@ -215,7 +206,7 @@
 
     <div style="display: flex; justify-content: space-between; align-items: center">
       <button type="button" class="rd-nav" data-prev aria-label="Previous card"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M15 5l-7 7 7 7"></path></svg></button>
-      <div style="display: flex; gap: 6px; align-items: center" aria-hidden="true">{%- for i in (1..5) -%}<span class="rd-pg"></span>{%- endfor -%}</div>
+      <div style="display: flex; gap: 6px; align-items: center" aria-hidden="true">{%- for i in (1..4) -%}<span class="rd-pg"></span>{%- endfor -%}</div>
       <button type="button" class="rd-nav" data-next aria-label="Next card"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M9 5l7 7-7 7"></path></svg></button>
     </div>
     <script type="application/json" data-moments>{{ section.settings.moments | split: '|' | json }}</script>
@@ -265,7 +256,7 @@
       var prev = function () { if (!busy && i > 0) { i--; layout(); } };
       var nope = function () {
         var c = top(); c.classList.remove('rd-nope'); void c.offsetWidth; c.classList.add('rd-nope');
-        var d = self.querySelector('[data-splash-do]'); if (d) { d.style.animation = 'none'; void d.offsetWidth; d.style.animation = ''; }
+        var t = self.querySelector('[data-tap-hint]'); if (t && splashes === 0) { t.style.animation = 'none'; void t.offsetWidth; t.style.animation = ''; }
       };
       var showHint = function () {
         hinted = true; if (!hint) return;
@@ -289,7 +280,7 @@
             bottle.appendChild(p);
           }
         }
-        if (splashes === 1) track('deck_splash_start');
+        if (splashes === 1) { track('deck_splash_start'); var th = self.querySelector('[data-tap-hint]'); if (th) th.classList.add('rd-tap-off'); }
         if (splashes >= 3) { track('deck_splash_done'); layout(); setTimeout(function () { if (i === 0) next('left'); }, 750); }
       });
 
@@ -298,22 +289,21 @@
         var active = ph === 'in' || ph === 'out' || ph === 'prep';
         circ.className = ph === 'in' ? 'rd-circ rd-circ-in' : (ph === 'out' || ph === 'prep' ? 'rd-circ' : 'rd-circ rd-circ-idle');
         core.className = active ? 'rd-core' : 'rd-core rd-core-sm';
-        core.textContent = active ? sec : (ph === 'done' ? 'AGAIN' : 'START');
-        core.setAttribute('aria-label', ph === 'done' ? 'Breathe again' : 'Start three breaths');
+        core.textContent = active ? sec : (ph === 'done' ? '' : 'START');
+        core.setAttribute('aria-label', ph === 'done' ? 'You are ready' : 'Start one breath');
         phase.innerHTML = '';
-        phase.appendChild(document.createTextNode((ph === 'in' || ph === 'prep') ? 'Breathe in ' : (ph === 'out' ? 'Breathe out ' : (ph === 'done' ? 'Ready. ' : 'Tap the circle '))));
-        var s = document.createElement('span'); s.textContent = active ? '· ' + round + ' of 3' : ''; phase.appendChild(s);
+        phase.appendChild(document.createTextNode((ph === 'in' || ph === 'prep') ? 'Breathe in ' : (ph === 'out' ? 'Breathe out ' : (ph === 'done' ? 'You are ready ' : 'Tap the circle '))));
+        var s = document.createElement('span'); s.textContent = ''; phase.appendChild(s);
       };
       var breathe = function () {
-        if (ph === 'in' || ph === 'out' || ph === 'prep') return;
+        if (ph !== 'idle') return;   // one breath, once
         clearInterval(bt); ph = 'prep'; sec = 4; round = 1; renderBreath(); track('deck_breathe_start');
         setTimeout(function () { ph = 'in'; renderBreath(); }, 40);
         bt = setInterval(function () {
           if (sec > 1) { sec--; renderBreath(); return; }
           if (ph === 'in') { ph = 'out'; sec = 4; renderBreath(); return; }
-          if (round < 3) { ph = 'in'; sec = 4; round++; renderBreath(); return; }
           clearInterval(bt); ph = 'done'; renderBreath(); track('deck_breathe_done');
-          setTimeout(function () { if (i === 1 && ph === 'done') next('left'); }, 1200);
+          setTimeout(function () { if (i === 1 && ph === 'done') next('left'); }, 700);
         }, 1000);
       };
       core.addEventListener('click', function () { if (swiped) { swiped = false; return; } breathe(); });
@@ -332,7 +322,7 @@
 
       nextBtn.addEventListener('click', function () { next('left'); });
       prevBtn.addEventListener('click', prev);
-      this.querySelector('[data-again]').addEventListener('click', function () { i = 0; splashes = 0; ph = 'idle'; clearInterval(bt); renderBreath(); out.textContent = 0; dots.forEach(function (d) { d.classList.remove('rd-dot-on'); }); layout(); track('deck_again'); });
+      this.querySelector('[data-again]').addEventListener('click', function () { var th = self.querySelector('[data-tap-hint]'); if (th) th.classList.remove('rd-tap-off'); i = 0; splashes = 0; ph = 'idle'; clearInterval(bt); renderBreath(); out.textContent = 0; dots.forEach(function (d) { d.classList.remove('rd-dot-on'); }); layout(); track('deck_again'); });
 
       /* Drag: the top card follows the finger; a throw either way moves on. Tap on cards 3-4 moves on too. */
       deck.addEventListener('pointerdown', function (e) {
@@ -390,11 +380,8 @@
     { "type": "text", "id": "gather_file", "label": "Older video file name (used only if no video is chosen above)", "default": "gather-compilation.mp4" },
     { "type": "text", "id": "gather_poster_file", "label": "Older cover file name", "default": "gather-compilation.jpg" },
     { "type": "text", "id": "gather_line", "label": "Line", "default": "Every month, a room full of strangers." },
-    { "type": "text", "id": "seat_cta", "label": "Free seat button", "default": "Win a free seat at the next Gathering ↓" },
-    { "type": "text", "id": "seat_sub", "label": "Free seat small line", "default": "Best letter each month wins." },
-    { "type": "header", "content": "Card 5: Two ways in" },
-    { "type": "text", "id": "ritual_line", "label": "Ritual line", "default": "The bottle and a stranger’s sealed letter." },
-    { "type": "text", "id": "passport_line", "label": "Passport line", "default": "Plus a seat at every gathering, the community and your numbered passport." }
+    { "type": "text", "id": "seat_cta", "label": "Free seat button", "default": "Win a free seat at the next Gathering ↓" }
+
   ],
   "presets": [{ "name": "TEKILA story deck" }]
 }

@@ -6,10 +6,11 @@
       <h2 id="cj-h-{{ section.id }}" style="margin: 0; display: flex; flex-direction: column; gap: 4px"><span class="wide" style="font-size: 40px; line-height: .92">{{ section.settings.heading_a }}</span><span class="cj-serif" style="color: #B3202B; font-size: 40px; line-height: 1">{{ section.settings.heading_b }}</span></h2>
 
       <div class="scene" data-scene="bag">
-        <div class="seat seat-box" data-seat>
+        <button type="button" class="seat seat-box seat-btn" data-seat data-track="letter_seat_tap">
           <span class="seat-tk">FREE<br>SEAT</span>
           <span style="font-size: 16px; line-height: 1.35; font-weight: 600">{{ section.settings.seat_line }}</span>
-        </div>
+          <span class="seat-go" aria-hidden="true">Write →</span>
+        </button>
         <p style="margin: 0; font-size: 16px; line-height: 1.45; font-weight: 600" data-bagline hidden>Your letter is in. Every letter in the bag is open to you now.</p>
         <div class="bag" role="group" aria-label="Bag of letters from strangers. Tap one to read it." data-bag>
           <span class="hint" data-hint>Tap a letter to read it</span>
