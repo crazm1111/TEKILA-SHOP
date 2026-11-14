@@ -18,7 +18,7 @@
         raf = 0;
         var hero = document.getElementById('top'), on = false;
         if (!document.documentElement.classList.contains('tk-intro-on') && hero) {
-          on = hero.getBoundingClientRect().bottom < 0 && !inView(document.getElementById('reserve')) && !inView(document.getElementById('tk-footer'));
+          on = hero.getBoundingClientRect().bottom < 0 && !inView(document.getElementById('reserve')) && !inView(document.getElementById('tk-footer')) && !document.documentElement.classList.contains('tk-no-sbar');
         }
         bar.classList.toggle('sbar-on', on);
         document.body.classList.toggle('tk-bar-on', on && innerWidth < 900);
@@ -26,6 +26,7 @@
       var sched = function () { if (!raf) raf = requestAnimationFrame(check); };
       addEventListener('scroll', sched, { passive: true }); addEventListener('resize', sched);
       document.addEventListener('tk:intro-done', sched);
+      document.addEventListener('tk:sbar', sched);
       check();
     }
   });
