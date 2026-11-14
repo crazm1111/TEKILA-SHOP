@@ -80,7 +80,7 @@
         io.observe(scene);
       } else { this.open = true; this.render(); }
     }
-    set(plan) { this.plan = plan; this.open = true; this.render(); }
+    set(plan) { this.plan = plan; this.open = true; this.render(); if (window.TK && TK.track) TK.track('pick_switch_' + plan); }
     render() {
       var p = this.plan === 'passport', open = this.open, self = this;
       this.q('[data-knob]').className = 'za-knob' + (p ? ' za-knob-p' : '');

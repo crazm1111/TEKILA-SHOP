@@ -62,6 +62,7 @@
     </ul>
 
     <div style="display: flex; flex-direction: column; gap: 12px; margin-top: 22px; padding-top: 18px; border-top: 1.5px dashed rgba(23,19,16,.3)">
+      <span class="y-mono" style="font-size: 11px; letter-spacing: .04em; opacity: .75">Batch <tk-time format="batch">01</tk-time> closes in <strong><tk-time format="short">Thursday</tk-time></strong> · arrives <strong><tk-time format="arrive">in ~10 days</tk-time></strong></span>
       <span class="y-left" data-pass-show><b>{{ left }} of 100 left</b> · {{ section.settings.window_line }}</span>
       <span class="y-left" style="font-weight: 600" data-rit-show hidden>{{ section.settings.upgrade_line }}</span>
       <div style="display: flex; align-items: center; gap: 12px">
@@ -69,7 +70,7 @@
           <span class="y-wide" style="font-size: 24px; line-height: 1; white-space: nowrap" data-price data-pass="{% render 'tk-price', cents: passport_price %}" data-rit="{% render 'tk-price', cents: ritual_price %}">{% render 'tk-price', cents: passport_price %}</span>
           <span class="y-mono" style="font-size: 10px; opacity: .55; text-decoration: line-through" data-pass-show>{{ section.settings.future_price }}</span>
         </span>
-        <a class="y-btn" href="{{ base }}?edition=passport" data-cta>Reserve the Passport</a>
+        <a class="y-btn" href="{{ base }}?edition=passport" data-cta data-track="pick_reserve">Reserve the Passport</a>
       </div>
     </div>
   </tk-pick>

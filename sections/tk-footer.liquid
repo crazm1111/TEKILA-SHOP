@@ -2,7 +2,20 @@
   <div style="max-width: 1200px; margin: 0 auto; padding: 64px 24px 40px; display: flex; flex-direction: column; gap: 40px">
     <p class="wide" style="margin: 0; font-size: clamp(64px, 14vw, 200px); line-height: .8">Tekila</p>
     <div style="display: flex; flex-wrap: wrap; gap: 16px 40px; justify-content: space-between; font-size: 15px">
-      <div class="tk-foot-line">{{ section.settings.line }}</div>
+      <div style="display: flex; flex-direction: column; gap: 6px">
+        <div class="tk-foot-line">{{ section.settings.line }}</div>
+        {%- liquid
+          assign goal = section.settings.unlock_goal | default: 500
+          assign sold = shop.metafields.tekila.sold_count.value | default: 0
+          if sold > goal
+            assign sold = goal
+          endif
+          assign to_go = goal | minus: sold
+        -%}
+        {%- if section.settings.unlock_line != blank -%}
+          <p class="mono" style="margin: 0; font-size: 13px; opacity: .8">🔒 {{ section.settings.unlock_line }} #{{ goal }} · {{ to_go }} bottles to go.</p>
+        {%- endif -%}
+      </div>
       <nav aria-label="Footer" style="display: flex; gap: 24px; flex-wrap: wrap">
         {%- if section.settings.instagram != blank -%}<a href="{{ section.settings.instagram }}" rel="noopener" target="_blank">Instagram</a>{%- endif -%}
         {%- if section.settings.tiktok != blank -%}<a href="{{ section.settings.tiktok }}" rel="noopener" target="_blank">TikTok</a>{%- endif -%}
@@ -21,7 +34,9 @@
     { "type": "url", "id": "instagram", "label": "Instagram URL" },
     { "type": "url", "id": "tiktok", "label": "TikTok URL" },
     { "type": "url", "id": "whatsapp", "label": "WhatsApp link (https://wa.me/20…)" },
-    { "type": "url", "id": "policies", "label": "Policies link" }
+    { "type": "url", "id": "policies", "label": "Policies link" },
+    { "type": "text", "id": "unlock_line", "label": "Unlock line", "default": "ADHD and Nicotine unlock at Anxiety", "info": "Shows how many bottles are left until the goal (shop metafield tekila.sold_count). Empty = hidden." },
+    { "type": "number", "id": "unlock_goal", "label": "Unlock at (bottles)", "default": 500 }
   ]
 }
 {% endschema %}

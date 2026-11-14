@@ -24,12 +24,6 @@
     {{ 'tk-base.css' | asset_url | stylesheet_tag }}
     <script src="{{ 'tk-core.js' | asset_url }}" defer></script>
 
-    {%- if is_home and request.design_mode == false -%}
-      <script>
-        /* First visit only: hold the site chrome back while the intro plays. */
-        try { if (!localStorage.getItem('tk-intro-seen')) document.documentElement.classList.add('tk-intro-on'); } catch (e) {}
-      </script>
-    {%- endif -%}
 
     {{ content_for_header }}
   </head>

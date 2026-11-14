@@ -6,6 +6,9 @@
   var MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 
   /* ---------- storage (never throws) ---------- */
+  /* Microsoft Clarity custom events (no-op if Clarity isn't loaded). */
+  TK.track = function (name) { try { if (window.clarity) window.clarity('event', name); } catch (e) {} };
+  document.addEventListener('click', function (e) { var el = e.target.closest && e.target.closest('[data-track]'); if (el) TK.track(el.getAttribute('data-track')); }, true);
   TK.get = function (store, k) { try { return window[store].getItem(k); } catch (e) { return null; } };
   TK.set = function (store, k, v) { try { window[store].setItem(k, v); } catch (e) {} };
 
