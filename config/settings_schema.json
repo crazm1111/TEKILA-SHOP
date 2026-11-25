@@ -2117,5 +2117,20 @@
         "default": "equal-width-buttons"
       }
     ]
+  },
+  {
+    "name": "EasyKash payments",
+    "settings": [
+      {
+        "type": "paragraph",
+        "content": "Online payment (card, mobile wallet, Apple Pay) through EasyKash. When the Worker URL is filled in, every checkout button opens the TEKILA delivery and payment sheet and Shopify checkout is skipped. Leave it empty to use Shopify checkout. Setup: github.com/crazm1111/tekila-easykash"
+      },
+      {
+        "type": "text",
+        "id": "easykash_worker_url",
+        "label": "Worker URL",
+        "info": "e.g. https://tekila-easykash.<account>.workers.dev"
+      }
+    ]
   }
 ]

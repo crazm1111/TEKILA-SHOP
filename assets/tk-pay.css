@@ -1,0 +1,117 @@
+/* EasyKash "Pay now" sheet (snippets/tk-pay.liquid). Loaded only when payments are switched on. */
+
+/* Online payment is the only way to pay: hide Shopify's express buttons (Buy it now, Shop Pay, Apple Pay in checkout…) */
+.additional-checkout-buttons,
+shopify-accelerated-checkout,
+shopify-accelerated-checkout-cart,
+.shopify-payment-button,
+[data-shopify="payment-button"] { display: none !important; }
+
+.tkpay {
+  --ink: var(--tk-ink, #171310);
+  --cream: var(--tk-cream, #F4EADA);
+  --paper: var(--tk-paper, #FBF6EC);
+  --kraft: var(--tk-kraft-light, #E7D9BF);
+  --red: var(--tk-red, #B3202B);
+  position: fixed;
+  inset: auto 0 0 0;
+  width: 100%;
+  max-width: 100%;
+  max-height: 100%;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--ink);
+  font-family: var(--tk-f-sans, 'Archivo', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif);
+  overflow: visible;
+}
+.tkpay::backdrop { background: rgba(14, 11, 9, .55); }
+.tkpay *, .tkpay *::before, .tkpay *::after { box-sizing: border-box; }
+
+.tkpay__panel {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  max-height: 92vh;
+  max-height: 92dvh;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+  padding: 18px 16px calc(20px + env(safe-area-inset-bottom));
+  background: var(--paper);
+  border-radius: 22px 22px 0 0;
+  box-shadow: 0 -10px 40px rgba(14, 11, 9, .25);
+  transform: translateY(100%);
+  transition: transform .32s cubic-bezier(.2, .8, .2, 1);
+}
+.tkpay[open].is-in .tkpay__panel { transform: none; }
+
+@media (min-width: 700px) {
+  .tkpay { inset: 0; display: none; place-items: center; height: 100%; }
+  .tkpay[open] { display: grid; }
+  .tkpay__panel { width: min(480px, calc(100% - 32px)); max-height: 90vh; border-radius: 22px; padding: 22px 22px 24px; transform: translateY(16px); opacity: 0; transition: transform .25s ease, opacity .25s ease; }
+  .tkpay[open].is-in .tkpay__panel { opacity: 1; }
+}
+@media (prefers-reduced-motion: reduce) { .tkpay__panel { transition: none; } }
+
+.tkpay__head { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.tkpay__h { margin: 0; font-size: 20px; line-height: 1.1; font-weight: 900; letter-spacing: -.01em; text-transform: uppercase; font-stretch: 125%; }
+.tkpay__x { flex: none; width: 44px; height: 44px; margin: -6px -8px -6px 0; display: grid; place-items: center; border: 0; border-radius: 50%; background: transparent; color: inherit; cursor: pointer; }
+.tkpay__x:hover { background: var(--cream); }
+
+.tkpay__items { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 10px; }
+.tkpay__item { display: grid; grid-template-columns: 52px 1fr auto; gap: 12px; align-items: center; padding: 10px; background: var(--cream); border-radius: 14px; }
+.tkpay__item img { width: 52px; height: 52px; object-fit: cover; border-radius: 10px; background: var(--kraft); display: block; }
+.tkpay__item-t { font-weight: 700; font-size: 15px; line-height: 1.25; }
+.tkpay__item-s { display: block; font-size: 13px; opacity: .7; margin-top: 2px; }
+.tkpay__item-p { font-family: var(--tk-f-mono, ui-monospace, monospace); font-size: 14px; font-weight: 600; white-space: nowrap; }
+
+.tkpay__fields { display: flex; flex-direction: column; gap: 12px; }
+.tkpay__field { display: flex; flex-direction: column; gap: 6px; font-size: 13px; font-weight: 600; min-width: 0; }
+.tkpay__field small { font-weight: 400; opacity: .6; font-size: 12px; }
+.tkpay input, .tkpay select {
+  width: 100%;
+  min-height: 50px;
+  padding: 12px 14px;
+  border: 1.5px solid rgba(23, 19, 16, .18);
+  border-radius: 14px;
+  background: #fff;
+  color: var(--ink);
+  font: inherit;
+  font-size: 16px; /* 16px stops iOS from zooming in */
+  font-weight: 400;
+  -webkit-appearance: none;
+  appearance: none;
+}
+.tkpay select { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%23171310' stroke-width='2.5' stroke-linecap='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 14px center; padding-right: 38px; }
+.tkpay input:focus, .tkpay select:focus { outline: none; border-color: var(--ink); box-shadow: 0 0 0 3px rgba(233, 169, 60, .45); }
+.tkpay [aria-invalid="true"] { border-color: var(--red); }
+
+.tkpay__code { display: flex; gap: 8px; align-items: flex-end; }
+.tkpay__code .tkpay__field { flex: 1; }
+.tkpay__code input { text-transform: uppercase; }
+.tkpay__apply { flex: none; min-height: 50px; padding: 0 18px; border: 1.5px solid var(--ink); border-radius: 14px; background: transparent; color: var(--ink); font: inherit; font-weight: 700; font-size: 15px; cursor: pointer; }
+.tkpay__apply:disabled { opacity: .5; cursor: wait; }
+.tkpay__applied { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin: 0; padding: 10px 14px; border-radius: 14px; background: #E5F0E1; color: #1F5A2A; font-size: 14px; }
+.tkpay__applied button { border: 0; background: none; color: inherit; font: inherit; font-weight: 700; text-decoration: underline; cursor: pointer; padding: 6px 0; }
+.tkpay__codemsg { margin: -6px 0 0; font-size: 13px; color: var(--red); }
+
+.tkpay__sum { display: grid; grid-template-columns: 1fr auto; gap: 8px 12px; margin: 0; padding: 14px 0 0; border-top: 1.5px dashed rgba(23, 19, 16, .2); font-size: 15px; }
+.tkpay__sum dt, .tkpay__sum dd { margin: 0; }
+.tkpay__sum dd { text-align: right; font-family: var(--tk-f-mono, ui-monospace, monospace); }
+.tkpay__sum dd[data-tkpay-disc] { color: #1F5A2A; }
+.tkpay__total { font-weight: 800; font-size: 18px; }
+
+.tkpay__msg { margin: 0; padding: 10px 14px; border-radius: 12px; background: #F8E1E1; color: #7A1219; font-size: 14px; line-height: 1.4; }
+.tkpay__go { min-height: 56px; border: 0; border-radius: 999px; background: var(--ink); color: var(--cream); font: inherit; font-weight: 800; font-size: 17px; cursor: pointer; transition: background .2s ease; }
+.tkpay__go:hover { background: var(--red); color: #fff; }
+.tkpay__go:disabled { opacity: .6; cursor: wait; }
+.tkpay__methods { display: flex; justify-content: center; flex-wrap: wrap; gap: 6px; }
+.tkpay__methods span { padding: 4px 10px; border-radius: 999px; background: var(--cream); font-size: 12px; font-weight: 600; }
+.tkpay__note { margin: 0; font-size: 12.5px; line-height: 1.45; opacity: .7; text-align: center; text-wrap: balance; }
+.tkpay__note svg { display: inline-block; vertical-align: -2px; margin-right: 4px; }
+
+.tkpay-done { position: fixed; inset: 0; z-index: 2147483000; display: grid; place-items: center; background: rgba(251, 246, 236, .96); font-family: var(--tk-f-sans, system-ui, sans-serif); color: #171310; text-align: center; }
+.tkpay-done div { display: flex; flex-direction: column; gap: 6px; }
+.tkpay-done b { font-size: 22px; }
