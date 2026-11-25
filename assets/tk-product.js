@@ -230,6 +230,12 @@
         await fetch('/cart/clear.js', { method: 'POST', headers: { 'Content-Type': 'application/json' } });
         var res = await fetch('/cart/add.js', { method: 'POST', headers: { 'Content-Type': 'application/json', accept: 'application/json' }, body: JSON.stringify({ items: [{ id: v.id, quantity: 1, properties: props }] }) });
         if (!res.ok) { var err = {}; try { err = await res.json(); } catch (e) {} throw new Error(err.description || 'Could not reserve right now.'); }
+        if (window.TKPay && this.dataset.checkout !== 'false') {
+          // EasyKash sheet (snippets/tk-pay.liquid) replaces Shopify checkout when it's switched on
+          this.busy = false; btn.removeAttribute('aria-busy'); this.render();
+          TKPay.open(btn);
+          return;
+        }
         location.href = this.dataset.checkout === 'false' ? '/cart' : '/checkout';
       } catch (e) {
         if (big) big.hidden = true;
