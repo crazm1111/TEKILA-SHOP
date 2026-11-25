@@ -102,6 +102,7 @@
     "variant_button_border_width": 1,
     "variant_button_radius": 14,
     "variant_button_width": "equal-width-buttons",
+    "easykash_worker_url": "https://tekila-easykash.hanykarim9.workers.dev",
     "sections": {
       "tk-header": {
         "type": "tk-header",
@@ -117,7 +118,9 @@
           "instagram": "",
           "tiktok": "",
           "whatsapp": "https://wa.me/201114940444",
-          "policies": ""
+          "policies": "",
+          "unlock_line": "ADHD and Nicotine unlock at Anxiety",
+          "unlock_goal": 500
         }
       }
     },
